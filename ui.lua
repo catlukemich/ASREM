@@ -1,7 +1,7 @@
 local constants = require("constants")
 local widget = require("widget")
 
-ui = {}
+local ui = {}
 
 function ui.createTextButton(label, width, height, listener)
     local sheetOptions = {
@@ -96,6 +96,10 @@ function ui.createImageButton(sheetPath, width, height, listener)
         overFrame = 2,
         onRelease = listener
     });
+
+    button.x = 0 
+    button.y = 0 
+
     return button
 end
 
@@ -158,8 +162,30 @@ function ui.layoutElementsVertically(elements, region)
 
     local currentY = spacing + region.y
     for i = 1, #elements do
-        elements[i].y = currentY + elements[i].height / 2
+        elements[i].y = math.round(currentY + elements[i].height / 2)
         currentY = currentY + elements[i].height + spacing
+    end
+end
+
+
+-- Layout the elements vertically int the given region, or in the whole screen if region not provided
+function ui.layoutElementsHorizontally(elements, region)
+    region = region or { x = 0, y = 0, width = display.contentWidth, height = display.contentHeight}
+    local regionWidth = region.width
+    local numElements = #elements
+    local totalWidth = 0
+
+    for i = 1, #elements do
+        totalWidth = totalWidth + elements[i].width
+    end
+    
+    local spaceLeft = regionWidth - totalWidth
+    local spacing = spaceLeft / (numElements + 1)
+
+    local currentX = spacing + region.x
+    for i = 1, #elements do
+        elements[i].x = math.round(currentX + elements[i].width / 2)
+        currentX = currentX + elements[i].width + spacing
     end
 end
 

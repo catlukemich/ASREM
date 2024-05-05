@@ -7,28 +7,31 @@ local ui_controls = {};
 function ui_controls.createCostActionButton(iconFilename, width, height, label, cost, listener)
     local group = display.newGroup();
     
-    local fontName = fontName or "assets/fonts/Teko-Bold.ttf";
-
+    
+    local fontName = "assets/fonts/Teko-Bold.ttf";
     local fontSize = 20
     local buttonLabel = display.newText(label, 0, 0, fontName, fontSize);
     buttonLabel.x = 45
-    buttonLabel.y = 25
+    buttonLabel.y = -10
 
     local filePath = "assets/graphics/ui/actions/" .. iconFilename;
     local buttonIcon = display.newImageRect(filePath, width, height);
     buttonIcon.x = 116
-    buttonIcon.y = 23
+    buttonIcon.y = -10
 
-    fontSize = 14
-    local costLabel  = display.newText(tostring(cost), 0, 0, fontName, fontSize);
+    fontName = "assets/fonts/Teko-Regular.ttf";
+    fontSize = 16
+    local costLabel  = display.newText("$" .. tostring(cost), 0, 0, fontName, fontSize);
     costLabel:setFillColor(1,1,1);
     costLabel.x = 45
-    costLabel.y = 49
+    costLabel.y = 15
 
     local buttonBackground = ui.createImageButton("assets/graphics/ui/actions/action_button_background.png", 140, 48, listener);
+    buttonBackground.x = 70
+    buttonBackground.y = -10
     local costBackground = display.newImageRect("assets/graphics/ui/actions/action_cost_background.png", 112, 22)
     costBackground.x = 56
-    costBackground.y = 48
+    costBackground.y = 14
 
     group:insert(costBackground)
     group:insert(buttonBackground);
@@ -37,12 +40,73 @@ function ui_controls.createCostActionButton(iconFilename, width, height, label, 
     group:insert(costLabel)
 
     function group:setCost(cost)
-        costLabel.text = tostring(cost)
+        costLabel.text = "$" .. tostring(cost)
     end
 
     return group
 end
 
+function ui_controls.createSpeedControls(speedChangeListener)
+    local function createSingleButton(imagePath, width, height)
+        local group = display.newGroup()
+
+        local backgroundButton = ui.createImageButton("assets/graphics/ui/speed_chooser/background_button.png", width, height)
+        local buttonImage = display.newImageRect(imagePath, width, height);
+
+        group:insert(backgroundButton)
+        group:insert(buttonImage)
+
+        function group:addEventListener(type, listener)
+            backgroundButton:addEventListener(type, listener)
+        end
+
+        return group
+    end
+
+    local group = display.newGroup()
+
+    local pauseButton = createSingleButton("assets/graphics/ui/speed_chooser/paused.png", 40, 40)
+    local normalSpeedButton = createSingleButton("assets/graphics/ui/speed_chooser/normal.png", 40, 40)
+    local speed2xButton = createSingleButton("assets/graphics/ui/speed_chooser/speed2x.png", 60, 40)
+    local speed4xButton = createSingleButton("assets/graphics/ui/speed_chooser/speed4x.png", 60, 40)
+    local endingGradient = display.newImageRect("assets/graphics/ui/speed_chooser/end_gradient.png", 55, 40);
+    
+    pauseButton.speed = 0
+    normalSpeedButton.speed = 1
+    speed2xButton.speed = 2
+    speed4xButton.speed = 4
+
+    local selectedRect = display.newRect(0, 0, 40,40);
+    selectedRect:setFillColor(255/255, 195/255, 0)
+    normalSpeedButton:insert(2, selectedRect)
+
+    ui.layoutElementsHorizontally(
+        {pauseButton, normalSpeedButton, speed2xButton, speed4xButton, endingGradient}, 
+        {x = 0, y = 0, width = 263, height = 0}
+    )
+
+    group:insert(pauseButton)
+    group:insert(normalSpeedButton)
+    group:insert(speed2xButton)
+    group:insert(speed4xButton)
+    group:insert(endingGradient)
+    
+    local function buttonTap(button)
+        selectedRect.width = button.width
+        selectedRect.height = button.height
+        button:insert(2, selectedRect);
+        if (speedChangeListener ~= nil) then 
+            speedChangeListener(button.speed)
+        end 
+    end
+
+    pauseButton:addEventListener("tap", function() buttonTap(pauseButton) end)
+    normalSpeedButton:addEventListener("tap", function() buttonTap(normalSpeedButton) end)
+    speed2xButton:addEventListener("tap", function() buttonTap(speed2xButton) end)
+    speed4xButton:addEventListener("tap", function() buttonTap(speed4xButton) end)
+
+    return group
+end
 
 function ui_controls.createLabeledSlider(label, width, listener)
     local group = display.newGroup();
@@ -126,7 +190,6 @@ function ui_controls.createFundsGauge(chartButtonListener)
     local fontSize = 20
     local label = display.newText("Funds: $1000", 0, 0, fontName, fontSize)
     label.x = 0
-    print(label.height)
     label:setFillColor(1,1,1);
 
     local chartButton = ui.createImageButton("assets/graphics/ui/funds_gauge/chart_button.png", 24, 24, chartButtonListener)
@@ -140,8 +203,84 @@ function ui_controls.createFundsGauge(chartButtonListener)
     group:insert(chartButton)
     group:insert(label)
 
-    function group:setFundds(funds)
-          label.text = "Funds: $" .. toString(funds)
+    function group:setFunds(funds)
+          label.text = "Funds: $" .. tostring(funds)
+    end
+
+    return group
+end
+
+
+function ui_controls.createContentmentDisplay()
+    local group = display.newGroup();
+   
+    local fontName = "assets/fonts/Teko-Regular.ttf"
+    local fontSize = 18
+    local label = display.newText("Contentment", 0, 0, fontName, fontSize)
+    label.x = 10
+    label.y = -16
+    
+    local emoticon = display.newImage("assets/graphics/ui/contentment/happy.png",24,24);
+    emoticon.x = 10
+    emoticon.y = 10
+
+    local background = display.newImageRect("assets/graphics/ui/contentment/background.png", 110, 60 )
+
+    group:insert(background)
+    group:insert(emoticon)
+    group:insert(label)
+
+    function group:setContentment(contentment)
+        local dirPath = "assets/graphics/ui/contentment/"
+        local emoticonFilename = {
+            "very_unhappy.png", "unhappy.png", "indifferent.png", "happy.png"
+        }
+        local fullPath = dirPath .. emoticonFilename[contentment]
+        local newEmoticon = display.newImageRect(fullPath, 24, 24)
+
+        group:insert(newEmoticon)
+        newEmoticon.x = emoticon.x
+        newEmoticon.y = emoticon.y
+        emoticon:removeSelf();
+    end
+
+    return group
+
+end
+
+
+function ui_controls.createDateDisplay()
+    local group = display.newGroup();
+    
+    local fontName = "assets/fonts/Teko-Regular.ttf"
+    
+    local fontSize = 20
+    local labelMonth = display.newText("Month: 1", 0, 0, fontName, fontSize)
+    labelMonth.x = 10
+    labelMonth.y = -10
+    
+    fontSize = 16
+    local labelDay = display.newText("Day: 1", 0, 0, fontName, fontSize)
+    labelDay.x = 10
+    labelDay.y = 14
+
+    local background = display.newImageRect("assets/graphics/ui/date/background.png", 110, 60)
+
+    group:insert(background)
+    group:insert(labelMonth)
+    group:insert(labelDay)
+
+    function group:setMonth(month)
+        labelMonth.text = "Month: " .. tostring(month)
+    end
+
+    function group:setDay(day)
+        labelDay.text = "Month: " .. tostring(day)
+    end
+
+    function group:setDate(month, day)
+        self:setMonth(month)
+        self:setDay(day)
     end
 
     return group

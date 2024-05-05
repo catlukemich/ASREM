@@ -1,0 +1,41 @@
+[
+  {
+    "sprfile": "apartment.spr"
+  },
+  {
+    "sprfile": "factory.spr"
+  },
+  {
+    "sprfile": "park 1.spr"
+  },
+  {
+    "sprfile": "park 2.spr"
+  },
+  {
+    "sprfile": "parking.spr"
+  },
+  {
+    "sprfile": "roads.spr"
+  },
+  {
+    "sprfile": "terrain.spr"
+  },
+  {
+    "sprfile": "tree#2.spr"
+  },
+  {
+    "sprfile": "tree#3.spr"
+  },
+  {
+    "sprfile": "tree#4.spr"
+  },
+  {
+    "sprfile": "tree#5.spr"
+  },
+  {
+    "sprfile": "tree.spr"
+  },
+  {
+    "sprfile": "water tower.spr"
+  }
+]

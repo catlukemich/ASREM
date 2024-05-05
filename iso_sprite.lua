@@ -1,8 +1,78 @@
 local constants = require("constants")
 local mathutils = require("mathutils")
+local json = require("json")
+local iso_sprite = {}
 
-iso_sprite = {}
 
+function iso_sprite.createSpritesCollection()
+    local collection = {}
+    
+    function collection:insert(sprite)
+        local spriteName = sprite.name
+        if spriteName ~= nil then 
+            collection[spriteName] = sprite
+        else
+            table.insert(collection, sprite)
+        end
+    end
+
+    function collection:get(spriteName) 
+        local sprite = collection[spriteName]
+        if sprite == nil then
+            error("No sprite named " .. spriteName);
+        end
+
+        return collection[spriteName]
+    end
+    
+    return collection
+end
+
+function iso_sprite.loadFromMultipleSpritesFile(directoryPath, spritesFilename)
+    local filePath = system.pathForFile(directoryPath .. "/" .. spritesFilename, system.ResourceDirectory)
+    local decodedJSON = json.decodeFile(filePath)
+    if decodedJSON == nil then
+        error("Cant load multiple sprites from path: " .. directoryPath .. "/" .. spritesFilename )
+    end
+
+    local collection = iso_sprite.createSpritesCollection()
+
+    for i, spriteData in pairs(decodedJSON) do
+        local sprFileName = spriteData.sprfile
+        local sprite = iso_sprite.loadFromSingleSpriteFile(directoryPath, sprFileName)
+        
+        collection:insert(sprite)
+    end
+
+    return collection
+end
+
+
+-- Create an iso sprite form a .str file 
+-- Such a file descibes the:
+-- - Path to the sprite's image
+-- - Anchor of the image
+-- - Location of the sprite in the world coordintates
+function iso_sprite.loadFromSingleSpriteFile(directoryPath, sprPath) 
+    local decodedJSON = json.decodeFile(directoryPath .. "/" .. sprPath)
+    if decodedJSON == nil then
+        error("Cant load sprite from path: " .. directoryPath .. "/" .. sprPath )
+    end
+    local imagePath  = directoryPath .. "/" .. decodedJSON.image
+    local location = decodedJSON.location
+    local anchor = decodedJSON.anchor
+    local size = decodedJSON.size
+    local sprite = iso_sprite.createFromImage(imagePath, size.width, size.height)
+    sprite.name = string.sub(sprPath, 0, #sprPath - 4)
+    sprite.anchorX = anchor.anchorX
+    sprite.anchorY = anchor.anchorY
+    sprite:setLocation(location)
+    return sprite
+end
+
+
+-- Create sprite from animation - that is a spritesheet given by a certain path and its frame width, 
+-- height and the number of frames that spritesheet has. Returns an iso sprite with a running animation. 
 function iso_sprite.createFromAnimation(sheetPath, frameWidth, frameHeight, numFrames)
     local animationSheet = graphics.newImageSheet(sheetPath, {
         width = frameWidth,
@@ -11,6 +81,10 @@ function iso_sprite.createFromAnimation(sheetPath, frameWidth, frameHeight, numF
         sheetContentWidth = frameWidth * numFrames,
         sheetContentHeight = frameHeight
     });
+
+    if animationSheet == nil then
+        error("Can't load image sheet from file: " .. sheetPath)
+    end
 
     local sequence = {
         start = 1,
@@ -22,15 +96,19 @@ function iso_sprite.createFromAnimation(sheetPath, frameWidth, frameHeight, numF
     local displayObject = display.newSprite(animationSheet, sequence);
     applyIsometricProperties(displayObject)
     displayObject:setBounds(1, 1, 1)
-    displayObject:setLocation(0, 0, 0)
+    displayObject:setLocation(mathutils:newVector3(0, 0, 0))
     return displayObject
 end
 
+-- Create an iso sprite that just displays a single image.
 function iso_sprite.createFromImage(path, width, height)
     local displayObject = display.newImageRect(path,width,height);
+    if displayObject == nil then
+        error("Can't load image from file: " .. path)
+    end
     applyIsometricProperties(displayObject)
     displayObject:setBounds(1, 1, 1)
-    displayObject:setLocation(0, 0, 0)
+    displayObject:setLocation(mathutils:newVector3(0, 0, 0))
     return displayObject
 end
 
@@ -38,7 +116,7 @@ end
 function iso_sprite.createFromObject(object)
     applyIsometricProperties(object)
     object:setBounds(1, 1, 1)
-    object:setLocation(0, 0, 0)
+    object:setLocation(mathutils:newVector3(0, 0, 0))
     return object
 end
 
@@ -50,7 +128,7 @@ function applyIsometricProperties(displayObject)
     displayObject.location = mathutils:newVector3(0, 0, 0)
 
     displayObject.boundsWidth  = 1
-    displayObject.boundsDepth  = 1
+    displayObject.boundsDepth  = 1  
     displayObject.boundsHeight = 1
 
     function displayObject:updateBounds()
@@ -69,42 +147,24 @@ function applyIsometricProperties(displayObject)
         self:updateBounds()
     end
 
-    function displayObject:setLocation(x, y, z)
-        self.location.x = x
-        self.location.y = y
-        self.location.z = z
+    function displayObject:setLocation(location)
+        self.location = location
         self:updateBounds()
-
         self:updatePosition()
     end
 
     function displayObject:updatePosition()
         if (self.isoView ~= nil) then
             local location = self.location
-            local center = self.isoView.center
-            local zoom = self.isoView.zoom
             local parent = self.parent
 
-            local posX, posY = iso_sprite.project(location, center,  zoom, parent)
+            local posX, posY = self.isoView:project(location, parent)
             self.x = posX
             self.y = posY
         end
     end
 
 end
-
-
--- Utility function from projecting from iso world coordinates to screen coordintates
-function iso_sprite.project(location, center, zoom, parent)
-    local x = (location.x - center.x - location.y + center.y) * constants.half_tile_width * zoom
-    local y = (location.x - center.x + location.y - center.y) * constants.half_tile_height * zoom - (location.z - center.z) * constants.vertical_step * zoom
-    if (parent == nil or (parent and parent.name == "view")) then
-        x = x + display.contentWidth / 2
-        y = y + display.contentHeight /  2
-    end
-    return x, y
-end
-
 
 return iso_sprite
 

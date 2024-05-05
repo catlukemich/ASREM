@@ -30,12 +30,10 @@ end
 
 function iso_zoomer:setZoom(targetZoom, doTransition)
     local isoGroup = self.isoGroup
-    local center = self.isoView.center
 
     if (targetZoom == 2) then
         self.isoView.zoom = 2
-        local newX, newY = iso_sprite.project(isoGroup.location, center, targetZoom)
-
+        local newX, newY = self.isoView:project(isoGroup.location)
 
         if doTransition then
             transition.to(isoGroup,{
@@ -53,7 +51,7 @@ function iso_zoomer:setZoom(targetZoom, doTransition)
         end
     else 
         self.isoView.zoom = 1
-        local newX, newY = iso_sprite.project(isoGroup.location, center, targetZoom)
+        local newX, newY = self.isoView:project(isoGroup.location)
 
         if doTransition then
             transition.to(isoGroup,{

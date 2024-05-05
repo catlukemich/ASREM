@@ -1,0 +1,26 @@
+{
+    "Lua.diagnostics.globals": [
+        "display",
+        "transition",
+        "easing",
+        "graphics",
+        "Runtime"
+    ],
+    "Lua.diagnostics.disable": [
+        "trailing-space"
+    ],
+    // "Lua.diagnostics.disable": [
+    //     "undefined-global"
+    // ]
+
+    "runOnSave.statusMessageTimeout": 3000,
+    "runOnSave.commands": [
+        {
+            // Assemble the assets:
+            // - sprites.json file in the assets/sprites directory
+            "match": ".*\\.lua$",
+            "command": "python ${workspaceFolder}\\assets.py",
+            "runningStatusMessage": "Assembling assets...",
+            "finishStatusMessage": "Assets assembled."
+        },
+}
