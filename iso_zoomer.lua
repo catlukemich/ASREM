@@ -30,18 +30,25 @@ end
 
 function iso_zoomer:setZoom(targetZoom, doTransition)
     local isoGroup = self.isoGroup
+    local isoView = self.isoView
 
     if (targetZoom == 2) then
-        self.isoView.zoom = 2
-        local newX, newY = self.isoView:project(isoGroup.location)
+        local newX, newY = self.isoView:project(isoGroup.location, nil, 2)
 
         if doTransition then
+            -- Lock scrolling
+            self.isoView.isoScroller:lock()
             transition.to(isoGroup,{
                 x = newX,
                 y = newY,
                 xScale = 1,
                 yScale = 1,
-                transition = easing.inOutCubic 
+                transition = easing.inOutCubic,
+                onComplete = function () self.isoView.isoScroller:unlock() end
+            })
+            transition.to(isoView,{
+                zoom = 2,
+                transition = easing.inOutCubic ,
             })
         else
             isoGroup.x = newX
@@ -50,15 +57,21 @@ function iso_zoomer:setZoom(targetZoom, doTransition)
             isoGroup.yScale = 1
         end
     else 
-        self.isoView.zoom = 1
-        local newX, newY = self.isoView:project(isoGroup.location)
-
+        local newX, newY = self.isoView:project(isoGroup.location, nil, 1)
         if doTransition then
+            -- Lock scrolling
+            self.isoView.isoScroller:lock()
             transition.to(isoGroup,{
                 x = newX,
                 y = newY,
-                xScale = 0.5,
+                xScale = 0.5,  
                 yScale = 0.5,
+                transition = easing.inOutCubic,
+                onComplete = function () self.isoView.isoScroller:unlock() end
+            })
+            
+            transition.to(isoView,{
+                zoom = 1,
                 transition = easing.inOutCubic 
             })
         else

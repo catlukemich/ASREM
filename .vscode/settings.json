@@ -4,7 +4,9 @@
         "transition",
         "easing",
         "graphics",
-        "Runtime"
+        "Runtime",
+        "system",
+        "timer"
     ],
     "Lua.diagnostics.disable": [
         "trailing-space"
@@ -23,4 +25,11 @@
             "runningStatusMessage": "Assembling assets...",
             "finishStatusMessage": "Assets assembled."
         },
+    ],
+
+    "code-runner.showTerminal": false,
+    "code-runner.executorMapByGlob": {
+        "*.lua": "python H:\\Scripts\\send_window_message.py"
+    },
+
 }

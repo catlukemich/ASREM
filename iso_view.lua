@@ -8,7 +8,7 @@ function iso_view:new(sceneView)
     local o = {}
     local group = display.newGroup()
 
-    sceneView.name = "view"
+    sceneView.name = "Scene View"
     o.isoGroup = iso_sprite.createFromObject(group)
 
     sceneView:insert(o.isoGroup)
@@ -72,24 +72,35 @@ function iso_view:disableScrolling()
 end
 
 -- Utility function from projecting from iso world coordinates to screen coordintates
-function iso_view:project(location, parent)
+function iso_view:project(location, parent, zoom)
     local center = self.center
-    local zoom = self.zoom
-    local x = (location.x - center.x - location.y + center.y) * constants.half_tile_width * zoom
-    local y = (location.x - center.x + location.y - center.y) * constants.half_tile_height * zoom - (location.z - center.z) * constants.vertical_step * zoom
-    if (parent == nil or (parent and parent.name == "view")) then
+    local zoom = zoom or self.zoom
+    local x, y
+    if (parent == nil or (parent and parent.name == "Scene View")) then
+        x = (location.x - center.x - location.y + center.y) * constants.half_tile_width * zoom
+        y = (location.x - center.x + location.y - center.y) * constants.half_tile_height * zoom - (location.z - center.z) * constants.vertical_step * zoom
         x = x + display.contentWidth / 2
         y = y + display.contentHeight /  2
+    else
+        x = (location.x - location.y) * constants.half_tile_width 
+        y = (location.x  + location.y) * constants.half_tile_height  - (location.z) * constants.vertical_step 
     end
     return x, y
 end
+
 
 
 function iso_view:sort()
     local function sortFunc(sprite1, sprite2)
         local layer1 = sprite1.layer or 0
         local layer2 = sprite2.layer or 0
-        return layer1 < layer2
+        if layer1 ~= layer2 then
+            return layer1 < layer2
+        else
+            local nearnes1 = sprite1.location.x + sprite1.location.y + sprite1.location.z
+            local nearnes2 = sprite2.location.x + sprite2.location.y + sprite2.location.z
+            return nearnes1 < nearnes2
+        end
     end
 
     local group = self.isoGroup

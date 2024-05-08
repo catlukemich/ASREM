@@ -1,0 +1,203 @@
+local json = require("json")
+local mathutils = require("mathutils")
+local iso_sprite = require("iso_sprite")
+
+local iso_curve = {}
+
+-- Parse curves from a file containing curves data
+-- Params:
+-- filePath - the path to the file in the resources directory to use for parsing
+-- join - whether to join the parsed curves together (join their ends and beginnings) - defaults to true
+function iso_curve.parseCurves(filePath, join)
+    if join ~= false then join = true end
+    local path = system.pathForFile(filePath)
+    local decodedJSON = json.decodeFile(path)
+    local beziers = {}
+    if decodedJSON == nil then
+        error("Can't parse iso_curve file: " .. filePath)
+    end
+    for _, curveData in pairs(decodedJSON) do
+        local cp1 = curveData.cp1
+        local cp2 = curveData.cp2
+        local cp3 = curveData.cp3
+        local cp4 = curveData.cp4
+        local bezier = iso_curve.newCubicBezier(cp1, cp2, cp3, cp4)
+        table.insert(beziers, bezier)
+    end
+
+    if join then
+        for _, curve1 in ipairs(beziers) do
+            for _, curve2 in ipairs(beziers) do
+                curve1:connectTo(curve2)
+            end    
+        end
+    end
+
+    return beziers
+end
+
+
+function iso_curve.newQuadraticBezier(cp1, cp2, cp3)
+    -- Where control points are tables created by call to mathutils.newVector3
+
+    local bezier = {
+        cp1 = cp1,
+        cp2 = cp2,
+        cp3 = cp3
+    }
+
+    function bezier:interpolate(t)
+        local location = mathutils.Vector3:new(
+            (1 - t) * ((1-t) * self.cp1.x + t * self.cp2.x) + t * ((1 - t) * self.cp2.x + t * self.cp3.x),
+            (1 - t) * ((1-t) * self.cp1.y + t * self.cp2.y) + t * ((1 - t) * self.cp2.y + t * self.cp3.y),
+            (1 - t) * ((1-t) * self.cp1.z + t * self.cp2.z) + t * ((1 - t) * self.cp2.z + t * self.cp3.z)
+        )
+        return location
+    end
+
+    iso_curve.applyConnectionProperties(bezier)
+
+    return bezier
+end
+
+function iso_curve.newCubicBezier(cp1, cp2, cp3, cp4)
+    -- Where control points are tables created by call to mathutils.newVector3
+    local bezier = {
+        cp1 = cp1,
+        cp2 = cp2,
+        cp3 = cp3,
+        cp4 = cp4
+    }
+
+    function bezier:interpolate(t)
+        local quadraticBezier1 = iso_curve.newQuadraticBezier(self.cp1, self.cp2, self.cp3)
+        local quadraticBezier2 = iso_curve.newQuadraticBezier(self.cp2, self.cp3, self.cp4)
+    
+        local itpl1 = quadraticBezier1:interpolate(t)
+        local itpl2 = quadraticBezier2:interpolate(t)
+
+        local location = mathutils.Vector3:new(
+            (1 - t) * itpl1.x + t * itpl2.x,
+            (1 - t) * itpl1.y + t * itpl2.y,
+            (1 - t) * itpl1.z + t * itpl2.z
+        )
+        return location
+    end
+
+    iso_curve.applyConnectionProperties(bezier)
+
+    return bezier
+end
+
+function iso_curve.applyConnectionProperties(curve)
+    curve.incomingConnections = {}
+    curve.outcomingConnections = {}
+
+    function curve:connectTo(otherCurve)
+        -- @type Vector3d
+        local selfStartLocation = curve:interpolate(0)
+        local selfEndLocation = curve:interpolate(1)
+
+        local otherStartLocation = otherCurve:interpolate(0)       
+        local otherEndLocation = otherCurve:interpolate(1)       
+
+        -- Try to join only start with end because it doesn't make sens to do otherwise
+        if selfStartLocation:isNear(otherEndLocation, 0.01) then
+            -- Join other end to this start.
+            table.insert(self.incomingConnections, otherCurve)
+        elseif selfEndLocation:isNear(otherStartLocation, 0.01) then
+            -- Join this end to other start
+            table.insert(self.outcomingConnections, otherCurve)
+        end
+    end
+      
+end
+
+-- Create an isometric curve that can be displayed on the screen:
+-- Params: 
+-- bezier: bezier curve used for the display curve
+-- isoView: the isometric view used for the displaying of the curve
+-- segments: number of segments of the curve (this curve isn't strictly a curve - it's a collection of lines)
+-- markDirection: whether to use start and end markings (the start will be marked by a rectange, the end - by circle) - defaults to nil
+function iso_curve.newDisplayCurve(bezier, isoView, segments, markDirection)
+    local group = display.newGroup()
+    iso_sprite.applyIsometricProperties(group)
+    
+    local colorStart = {1, 1, 0}
+    local colorEnd = {0, 0, 1}
+
+    local segments = segments or 10
+    for segment = 0, segments - 1 do
+        local t1 = segment / segments
+        local t2 = (segment + 1) / segments
+
+        local loc1 = bezier:interpolate(t1)
+        local loc2 = bezier:interpolate(t2)
+
+        local x1, y1 = isoView:project(loc1, isoView.isoGroup)
+        local x2, y2 = isoView:project(loc2, isoView.isoGroup)
+
+        
+        local line = display.newLine(x1, y1, x2, y2)
+        group:insert(line)
+
+        local color = {
+            (1 - ((t1 + t2) / 2)) * colorStart[1] + ((t1 + t2) / 2) * colorEnd[1], 
+            (1 - ((t1 + t2) / 2)) * colorStart[2] + ((t1 + t2) / 2) * colorEnd[2], 
+            (1 - ((t1 + t2) / 2)) * colorStart[3] + ((t1 + t2) / 2) * colorEnd[3], 
+        }
+        line:setStrokeColor(color[1], color[2], color[3])
+    end
+    
+    if markDirection then
+        local startLoc = bezier:interpolate(0)
+        local endLoc = bezier:interpolate(1)
+
+        local xStart, yStart = isoView:project(startLoc, isoView.isoGroup)
+        local xEnd, yEnd = isoView:project(endLoc, isoView.isoGroup)
+        
+        local startMark = display.newRect(xStart - 2, yStart - 2, 8, 8)
+        startMark:setFillColor(1, 1, 0)
+        group:insert(startMark)
+
+        local endMark = display.newCircle(xEnd, yEnd, 5)
+        endMark:setFillColor(0, 0, 1)
+        group:insert(endMark)
+    end
+
+    return group
+end
+
+function iso_curve.makeCurveTraveler(isoSprite)
+    local traveler = isoSprite
+
+    traveler.curve = nil
+    traveler.t = 0
+
+    function traveler:setCurve(curve) 
+        traveler.curve = curve
+        traveler.t = 0
+    end
+
+    function traveler:setStep(distance)
+        traveler.step = distance
+    end
+
+    function traveler:update(time)
+        traveler.t = traveler.t + time / 100
+        local location = traveler.curve:interpolate(traveler.t)
+        traveler:setLocation(location)
+        if traveler.t > 1 then
+            local connections = traveler.curve.outcomingConnections
+            if #connections > 0 then
+                local randomCurve = connections[math.random(#connections)]
+                traveler:setCurve(randomCurve)
+            end
+            traveler.t = 0
+        end
+    end
+
+    return traveler
+end
+
+return iso_curve

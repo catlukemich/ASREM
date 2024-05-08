@@ -9,13 +9,6 @@ function gestures.enableMultitouchSimulation()
 
     local lastMouseEvent = nil
 
-    -- local function simulatedPinchListener(scale)
-    --     print("The received scale is:")
-    --     print(scale)
-    -- end
-    
-    -- local listenerObject = {listenerFunction = simulatedPinchListener}
-
     local function onKeyEvent(event)
         print(event.keyName)
         if lastMouseEvent and event.keyName == "m" then
@@ -52,7 +45,7 @@ end
 function gestures.enablePinch()
     -- Detect if multitouch is supported and activate if so.
     if not system.hasEventSource("multitouch") then
-        error("No multitouch supported")
+        error("No multitouch supported") 
     else
         system.activate("multitouch")
     end

@@ -8,14 +8,11 @@ function iso_scroller:new(isoView, isoGroup)
     o.isoGroup = isoGroup
     o.startX = 0
     o.startY = 0
+    o.locked = false
     o.handleTouch = function(event) 
         o:moveView(event)
     end
     
-    local rect = display.newRect(0,0,4,4);
-    rect:setFillColor(1,0,0,1);
-    self.rect = rect
-
     setmetatable(o,self)
     self.__index = self
     return o
@@ -26,12 +23,14 @@ function iso_scroller:setIsoGroup(isoGroup)
 end
 
 function iso_scroller:moveView(event)
+    if self.locked then return end
+
     if(event.phase == "began") then
         self.startX = event.x
         self.startY = event.y
     end
 
-    if(event.phase == "moved") then
+    if(event.phase == "moved")  then
         local center = self.isoView.center
         local zoom = self.isoView.zoom
         local xDelta = event.x - self.startX
@@ -53,5 +52,15 @@ end
 function iso_scroller:disable()
     Runtime:removeEventListener("touch", self.handleTouch);
 end
+
+function iso_scroller:lock()
+    self.locked = true
+    print("LCOKDSIGNA !!!!")
+end
+
+function iso_scroller:unlock()
+    self.locked = false
+end
+    
 
 return iso_scroller

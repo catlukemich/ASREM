@@ -94,9 +94,9 @@ function iso_sprite.createFromAnimation(sheetPath, frameWidth, frameHeight, numF
     }
 
     local displayObject = display.newSprite(animationSheet, sequence);
-    applyIsometricProperties(displayObject)
+    iso_sprite.applyIsometricProperties(displayObject)
     displayObject:setBounds(1, 1, 1)
-    displayObject:setLocation(mathutils:newVector3(0, 0, 0))
+    displayObject:setLocation(mathutils.Vector3:new(0, 0, 0))
     return displayObject
 end
 
@@ -106,17 +106,17 @@ function iso_sprite.createFromImage(path, width, height)
     if displayObject == nil then
         error("Can't load image from file: " .. path)
     end
-    applyIsometricProperties(displayObject)
+    iso_sprite.applyIsometricProperties(displayObject)
     displayObject:setBounds(1, 1, 1)
-    displayObject:setLocation(mathutils:newVector3(0, 0, 0))
+    displayObject:setLocation(mathutils.Vector3:new(0, 0, 0))
     return displayObject
 end
 
 -- Make an existing object an iso sprite and return it
 function iso_sprite.createFromObject(object)
-    applyIsometricProperties(object)
+    iso_sprite.applyIsometricProperties(object)
     object:setBounds(1, 1, 1)
-    object:setLocation(mathutils:newVector3(0, 0, 0))
+    object:setLocation(mathutils.Vector3:new(0, 0, 0))
     return object
 end
 
@@ -124,8 +124,8 @@ function iso_sprite.createMultiDirectional()
     -- TODO
 end
 
-function applyIsometricProperties(displayObject) 
-    displayObject.location = mathutils:newVector3(0, 0, 0)
+function iso_sprite.applyIsometricProperties(displayObject) 
+    displayObject.location = mathutils.Vector3:new(0, 0, 0)
 
     displayObject.boundsWidth  = 1
     displayObject.boundsDepth  = 1  
