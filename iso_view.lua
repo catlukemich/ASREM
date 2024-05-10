@@ -2,7 +2,10 @@ local constants = require("constants")
 local iso_zoomer = require("iso_zoomer")
 local iso_scroller = require("iso_scroller")
 local iso_sprite = require("iso_sprite")
+local mathutils = require("mathutils");
+
 local iso_view = {}
+
 
 function iso_view:new(sceneView)
     local o = {}
@@ -38,7 +41,6 @@ function iso_view:insert(isoSprite)
 end
 
 
-
 function iso_view:insertCollection(isoSpriteCollection)
     for key, sprite in pairs(isoSpriteCollection) do 
         if type(sprite) == "table" then
@@ -50,44 +52,91 @@ function iso_view:insertCollection(isoSpriteCollection)
 end
 
 
-
 function iso_view:remove(isoSprite)
     self.isoGroup:remove(isoSprite)
 end
+
 
 function iso_view:setZoom(zoom, doTransition)
     self.isoZoomer:setZoom(zoom, doTransition)
 end
 
+
 function iso_view:toggleZoom()
     self.isoZoomer:toggleZoom()
 end
+
 
 function iso_view:enableScrolling()
     self.isoScroller:enable()
 end
 
+
 function iso_view:disableScrolling()
     self.isoScroller:disable()
 end
 
+function iso_view:applyMask(mask)
+      self.mask = mask
+      self.isoGroup:setMask(mask)
+end
+
+-- Constrain scrolling of the view to a given 2d coordinates, so that view won't show objects beyond this bounds.
+function iso_view:constrainViewArea(minX, minY, maxX, maxY)
+    self.viewConstraints = {minX = minX, minY = minY, maxX = maxX, maxY = maxY}
+end
+
+function iso_view:unConstrainViewArea()
+    self.viewConstraints = nil
+end
+
 -- Utility function from projecting from iso world coordinates to screen coordintates
-function iso_view:project(location, parent, zoom)
-    local center = self.center
-    local zoom = zoom or self.zoom
+function iso_view:project(location, parent, zoom, center)
+    zoom = zoom or self.zoom
+    center = center or self.center
     local x, y
     if (parent == nil or (parent and parent.name == "Scene View")) then
-        x = (location.x - center.x - location.y + center.y) * constants.half_tile_width * zoom
-        y = (location.x - center.x + location.y - center.y) * constants.half_tile_height * zoom - (location.z - center.z) * constants.vertical_step * zoom
+        x = (location.x - center.x - location.y + center.y) * constants.HALF_TILE_WIDTH * zoom
+        y = (location.x - center.x + location.y - center.y) * constants.HALF_TILE_HEIGHT * zoom - (location.z - center.z) * constants.V_STEP * zoom
         x = x + display.contentWidth / 2
         y = y + display.contentHeight /  2
     else
-        x = (location.x - location.y) * constants.half_tile_width 
-        y = (location.x  + location.y) * constants.half_tile_height  - (location.z) * constants.vertical_step 
+        x = (location.x - location.y) * constants.HALF_TILE_WIDTH 
+        y = (location.x  + location.y) * constants.HALF_TILE_HEIGHT  - (location.z) * constants.V_STEP 
     end
     return x, y
 end
 
+-- This function will project a location relative to world center on to 2d coordinates.
+-- This means a point that's located in some distance away from the center will get x and y position as if 
+-- the view's center was at the same position as the world center.
+-- Params:
+-- - location - mathutils.Vector3 instance or any table with x, y and z members.
+function iso_view:projectWorld(location)
+    local x, y
+    
+    x = (location.x - location.y) * constants.HALF_TILE_WIDTH 
+    y = (location.x + location.y) * constants.HALF_TILE_HEIGHT - (location.z) * constants.V_STEP
+   
+    return x, y
+end
+
+-- Unproject a flat 2d position to a world location coordintates. 
+-- The coordinates are relative to the world center, as if it was in the center of the flat plane the input position exists on.
+-- Params:
+-- - position - the position to unproject, mathutils.Vector2 instance or any table with x and y members.
+-- Returns:
+-- - Instance of mathutils.Vector3 
+function iso_view:unprojectWorld(position, zValue, zoom)
+    zoom = zoom or self.zoom
+    local htw = constants.HALF_TILE_WIDTH
+    local hth = constants.HALF_TILE_HEIGHT
+
+    local locationX = (position.x * hth + position.y * htw + hth * constants.V_STEP * zValue) / (2 * htw * hth)
+    local locationY = locationX - position.x / htw
+
+    return mathutils.Vector3:new(locationX, locationY, zValue)
+end
 
 
 function iso_view:sort()

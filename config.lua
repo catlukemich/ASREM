@@ -21,6 +21,6 @@ application =
 			    ["@4x"] = 2.5,
 		},
 
-		-- shaderPrecision = "highp",
+		-- shaderPrecision = "lowp",
 	},
 }

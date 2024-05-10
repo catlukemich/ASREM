@@ -58,6 +58,11 @@ function iso_zoomer:setZoom(targetZoom, doTransition)
         end
     else 
         local newX, newY = self.isoView:project(isoGroup.location, nil, 1)
+        -- Find constrained newX and newY:
+        local newViewCenter = self.isoView.isoScroller:findViewConstrainedCenter(self.isoView.center, 1)
+        newX, newY = self.isoView:project(isoGroup.location, nil, 1, newViewCenter)
+        self.isoView.center = newViewCenter
+
         if doTransition then
             -- Lock scrolling
             self.isoView.isoScroller:lock()

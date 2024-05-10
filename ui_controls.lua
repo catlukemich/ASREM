@@ -14,7 +14,7 @@ function ui_controls.createCostActionButton(iconFilename, width, height, label, 
     buttonLabel.x = 45
     buttonLabel.y = -10
 
-    local filePath = "assets/graphics/ui/actions/" .. iconFilename;
+    local filePath = "assets/ui/actions/" .. iconFilename;
     local buttonIcon = display.newImageRect(filePath, width, height);
     buttonIcon.x = 116
     buttonIcon.y = -10
@@ -26,10 +26,10 @@ function ui_controls.createCostActionButton(iconFilename, width, height, label, 
     costLabel.x = 45
     costLabel.y = 15
 
-    local buttonBackground = ui.createImageButton("assets/graphics/ui/actions/action_button_background.png", 140, 48, listener);
+    local buttonBackground = ui.createImageButton("assets/ui/actions/action_button_background.png", 140, 48, listener);
     buttonBackground.x = 70
     buttonBackground.y = -10
-    local costBackground = display.newImageRect("assets/graphics/ui/actions/action_cost_background.png", 112, 22)
+    local costBackground = display.newImageRect("assets/ui/actions/action_cost_background.png", 112, 22)
     costBackground.x = 56
     costBackground.y = 14
 
@@ -50,7 +50,7 @@ function ui_controls.createSpeedControls(speedChangeListener)
     local function createSingleButton(imagePath, width, height)
         local group = display.newGroup()
 
-        local backgroundButton = ui.createImageButton("assets/graphics/ui/speed_chooser/background_button.png", width, height)
+        local backgroundButton = ui.createImageButton("assets/ui/speed_chooser/background_button.png", width, height)
         local buttonImage = display.newImageRect(imagePath, width, height);
 
         group:insert(backgroundButton)
@@ -65,11 +65,11 @@ function ui_controls.createSpeedControls(speedChangeListener)
 
     local group = display.newGroup()
 
-    local pauseButton = createSingleButton("assets/graphics/ui/speed_chooser/paused.png", 40, 40)
-    local normalSpeedButton = createSingleButton("assets/graphics/ui/speed_chooser/normal.png", 40, 40)
-    local speed2xButton = createSingleButton("assets/graphics/ui/speed_chooser/speed2x.png", 60, 40)
-    local speed4xButton = createSingleButton("assets/graphics/ui/speed_chooser/speed4x.png", 60, 40)
-    local endingGradient = display.newImageRect("assets/graphics/ui/speed_chooser/end_gradient.png", 55, 40);
+    local pauseButton = createSingleButton("assets/ui/speed_chooser/paused.png", 40, 40)
+    local normalSpeedButton = createSingleButton("assets/ui/speed_chooser/normal.png", 40, 40)
+    local speed2xButton = createSingleButton("assets/ui/speed_chooser/speed2x.png", 60, 40)
+    local speed4xButton = createSingleButton("assets/ui/speed_chooser/speed4x.png", 60, 40)
+    local endingGradient = display.newImageRect("assets/ui/speed_chooser/end_gradient.png", 55, 40);
     
     pauseButton.speed = 0
     normalSpeedButton.speed = 1
@@ -111,7 +111,7 @@ end
 function ui_controls.createLabeledSlider(label, width, listener)
     local group = display.newGroup();
 
-    local background = display.newImageRect("assets/graphics/ui/slider/slider_background.png", width + 80, 40)
+    local background = display.newImageRect("assets/ui/slider/slider_background.png", width + 80, 40)
     background.x = (width + 80) / 2
     group:insert(background)
 
@@ -123,7 +123,7 @@ function ui_controls.createLabeledSlider(label, width, listener)
         sheetContentHeight = 24
     }
 
-    local sheet = graphics.newImageSheet("assets/graphics/ui/slider/slider_sheet.png", sheetOptions)
+    local sheet = graphics.newImageSheet("assets/ui/slider/slider_sheet.png", sheetOptions)
     
     local sliderOptions = {
         sheet = sheet,
@@ -169,7 +169,7 @@ function ui_controls.createStatusBar()
     local group = display.newGroup()
 
     local width = 300
-    local background = display.newImageRect("assets/graphics/ui/statusbar/background.png", width, 26);
+    local background = display.newImageRect("assets/ui/statusbar/background.png", width, 26);
     background.x = width / 2
     group:insert(background)
 
@@ -192,11 +192,11 @@ function ui_controls.createFundsGauge(chartButtonListener)
     label.x = 0
     label:setFillColor(1,1,1);
 
-    local chartButton = ui.createImageButton("assets/graphics/ui/funds_gauge/chart_button.png", 24, 24, chartButtonListener)
+    local chartButton = ui.createImageButton("assets/ui/funds_gauge/chart_button.png", 24, 24, chartButtonListener)
     chartButton.x = 68
     chartButton.y = 0
 
-    local background = display.newImageRect("assets/graphics/ui/funds_gauge/background.png", 196, 30);
+    local background = display.newImageRect("assets/ui/funds_gauge/background.png", 196, 30);
     
 
     group:insert(background)
@@ -220,18 +220,18 @@ function ui_controls.createContentmentDisplay()
     label.x = 10
     label.y = -16
     
-    local emoticon = display.newImage("assets/graphics/ui/contentment/happy.png",24,24);
+    local emoticon = display.newImage("assets/ui/contentment/happy.png",24,24);
     emoticon.x = 10
     emoticon.y = 10
 
-    local background = display.newImageRect("assets/graphics/ui/contentment/background.png", 110, 60 )
+    local background = display.newImageRect("assets/ui/contentment/background.png", 110, 60 )
 
     group:insert(background)
     group:insert(emoticon)
     group:insert(label)
 
     function group:setContentment(contentment)
-        local dirPath = "assets/graphics/ui/contentment/"
+        local dirPath = "assets/ui/contentment/"
         local emoticonFilename = {
             "very_unhappy.png", "unhappy.png", "indifferent.png", "happy.png"
         }
@@ -264,7 +264,7 @@ function ui_controls.createDateDisplay()
     labelDay.x = 10
     labelDay.y = 14
 
-    local background = display.newImageRect("assets/graphics/ui/date/background.png", 110, 60)
+    local background = display.newImageRect("assets/ui/date/background.png", 110, 60)
 
     group:insert(background)
     group:insert(labelMonth)

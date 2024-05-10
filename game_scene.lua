@@ -14,36 +14,87 @@ function scene:create()
     self.isoView = isoView
 
     self.isoView:setZoom(1)
-    self.isoView:enableScrolling();
 end
 
 function scene:show(event)
     if (event.phase == "will") then
         composer.showOverlay("game_hud");
-        local sprites = iso_sprite.loadFromMultipleSpritesFile("assets/sprites", "sprites.json")
-
-        local terrain = sprites:get("terrain")
-        terrain.layer = -2
+        self.isoView:enableScrolling();
+        self.isoView:constrainViewArea(-1345 / 3, -1794 / 3, 1345 / 3, 1794 / 3)
         
-        self.isoView:insertCollection(sprites)
+        self:loadSprites()
+        self:enableMouseZooming()
+        self:enablePinchZooming(true)
+        self:loadCurves(true)
+        self:runUpdateLoop()
+    end
+end
 
-        Runtime:addEventListener("mouse", function(event) self:onMouseEvent(event) end)
+function scene:hide(event)
+    if event.phase == "did" then
+        timer.cancel(self.updateTimer)
+    end
+end
 
+function scene:loadSprites()
+    -- -- Create the grass underneath everything:
+    -- local grassTexture = graphics.newTexture({type = "image", filename = "assets/images/grass_texture.png"} )
+    -- local grass = display.newRect(0, 0, 5000, 5000)
+    -- grass.fill = {
+    --     type = "image",
+    --     filename = grassTexture.filename,
+    --     baseDir = grassTexture.baseDir,
+    -- }
+    -- grass.fill.scaleX = 0.4
+    -- grass.fill.scaleY = 0.4
+    -- local grassSprite = iso_sprite.createFromObject(grass)
+    -- grassSprite.layer = -10
+    -- self.isoView:insert(grassSprite)
+
+    local grassSprite = iso_sprite.createFromImage("assets/images/grass.png" , 1345 * 2, 1794 * 2 )
+    self.isoView:insert(grassSprite)
+
+    -- Load all the static sprites:
+    local sprites = iso_sprite.loadFromMultipleSpritesFile("assets/sprites", "sprites.json")
+    self.isoView:insertCollection(sprites)
+end
+
+function scene:enableMouseZooming()
+    self.zoomFunction = function (event)
+        if event.type == "scroll" then
+            if event.scrollY > 0 then
+                self.isoView:setZoom(1, true)
+            else
+                self.isoView:setZoom(2, true)
+            end
+        end
+    end
+
+    Runtime:addEventListener("mouse", self.zoomFunction)
+end
+
+function scene:enablePinchZooming(simulate)
+    self.zoomOnPinch = function(pinchScale)
+        print(pinchScale)
+        if pinchScale > 4 then
+            self.isoView:setZoom(2, true)
+        elseif pinchScale < 0.4 then
+            self.isoView:setZoom(1, true)
+        end
+    end
+    if simulate then
         gestures.enableMultitouchSimulation()
-        gestures.addPinchListener(function(scale) self:zoomOnPinch(scale) end)
+    end
 
-        local cp1 = mathutils.Vector3:new(-2,0,0)
-        local cp2 = mathutils.Vector3:new(0,0,0)
-        local cp3 = mathutils.Vector3:new(0,0,0)
-        local cp4 = mathutils.Vector3:new(0,2,0)
+    gestures.addPinchListener(self.zoomOnPinch)
+end
 
-        local bezier = iso_curve.newCubicBezier(cp1, cp2, cp3, cp4)
-        local curve = iso_curve.newDisplayCurve(bezier, self.isoView)
-        curve.layer = 2
-        self.isoView:insert(curve)
- 
-        local beziers = iso_curve.parseCurves("assets/curves.json")
-        for index, bezier in ipairs(beziers) do
+function scene:loadCurves(debug)
+    local beziers = iso_curve.parseCurves("assets/curves.json")
+
+    -- Debugging code:
+    if debug then
+        for _, bezier in ipairs(beziers) do
             local curve = iso_curve.newDisplayCurve(bezier, self.isoView, 10, true)
             curve.layer = 3
             self.isoView:insert(curve)
@@ -57,43 +108,14 @@ function scene:show(event)
         print(beziers[1])
         travelerSprite:setCurve(beziers[4])
         self.travelerSprite = travelerSprite
- 
-        self.updateTimer = timer.performWithDelay(30, function() self:update() end, 0)
-
-        print(utils.getLineNumber())
-        -- error("nope")
     end
 end
 
-function scene:hide(event)
-    if event.phase == "did" then
-        timer.cancel(self.updateTimer)
-    end
-end
-
-
-function scene:onMouseEvent(event)
-    if event.type == "scroll" then
-        if event.scrollY > 0 then
-            self.isoView:setZoom(1, true)
-        else
-            self.isoView:setZoom(2, true)
-        end
-    end
-end
-
-function scene:zoomOnPinch(pinchScale)
-    print(pinchScale)
-    if pinchScale > 4 then
-        self.isoView:setZoom(2, true)
-    elseif pinchScale < 0.4 then
-        self.isoView:setZoom(1, true)
-    end
+function scene:runUpdateLoop()
+    self.updateTimer = timer.performWithDelay(30, function() self:update() end, 0)
 end
 
 function scene:update()
-    -- print("Update")
-    -- print(param)
     self.travelerSprite:update(1)
 end
 
