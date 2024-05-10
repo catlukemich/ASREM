@@ -1,4 +1,4 @@
-local constants = require("constants")
+local view_constants = require("view_constants")
 local mathutils = require("mathutils")
 
 local iso_scroller = {}
@@ -65,38 +65,18 @@ function iso_scroller:moveView(event)
         local zoom = self.isoView.zoom
         local xDelta = event.x - self.startX
         local yDelta = event.y - self.startY
-        print(xDelta .. " " .. yDelta)
         self.startX = event.x
         self.startY = event.y
 
-
-      
-
         -- Align the isoView's center' location basing on the x and y delta:
         local multiplier = 1 / zoom
-        local oldCenterX = viewCenter.x
-        local oldCentery = viewCenter.y
-        viewCenter.x = viewCenter.x - xDelta / constants.HALF_TILE_WIDTH * multiplier / 2 - yDelta / constants.HALF_TILE_HEIGHT * multiplier / 2
-        viewCenter.y = viewCenter.y + xDelta / constants.HALF_TILE_WIDTH * multiplier / 2 - yDelta / constants.HALF_TILE_HEIGHT * multiplier / 2
+        viewCenter.x = viewCenter.x - xDelta / view_constants.HALF_TILE_WIDTH * multiplier / 2 - yDelta / view_constants.HALF_TILE_HEIGHT * multiplier / 2
+        viewCenter.y = viewCenter.y + xDelta / view_constants.HALF_TILE_WIDTH * multiplier / 2 - yDelta / view_constants.HALF_TILE_HEIGHT * multiplier / 2
         
         -- Constrain the view:
-        local center2DX, center2DY = self.isoView:projectWorld(viewCenter)
-        local left =    center2DX - ((display.contentWidth / 2) * (1/zoom))
-        local top =     center2DY - ((display.contentHeight / 2) * (1/zoom))
-        local right =   center2DX + ((display.contentWidth / 2) * (1/zoom))
-        local bottom =  center2DY + ((display.contentHeight / 2) * (1/zoom))
-
-        local constraints = self.isoView.viewConstraints
-
-        if constraints then
-            if left > constraints.minX and right < constraints.maxX and top > constraints.minY and bottom < constraints.maxY then
-                    -- Do nothing, we're fine scrolling - I'm too lazy to negate the above condition in parentheses
-            else
-                local newViewCenter = self:findViewConstrainedCenter(viewCenter)
-                viewCenter.x = newViewCenter.x
-                viewCenter.y = newViewCenter.y
-            end
-        end
+        local newViewCenter = self:findViewConstrainedCenter(viewCenter)
+        viewCenter.x = newViewCenter.x
+        viewCenter.y = newViewCenter.y
 
         self.isoGroup:updatePosition()
     end
@@ -110,17 +90,37 @@ function iso_scroller:findViewConstrainedCenter(viewCenter, targetZoom, targetDi
     local zoom = targetZoom or self.isoView.zoom
     targetDisplayWidth = targetDisplayWidth or display.contentWidth
     targetDisplayHeight = targetDisplayHeight or display.contentHeight
+    
+    local sizeMultiplier = 2 ^ (view_constants.INITIAL_ZOOM - zoom)
+    local horizontalMargin = (targetDisplayWidth / 2) * sizeMultiplier
+    local verticalMargin = (targetDisplayHeight / 2) * sizeMultiplier
     local center2DXNew, center2DYNew = self.isoView:projectWorld(viewCenter)
-    local center2DXMin = constraints.minX + ((targetDisplayWidth / 2) * (1/zoom))
-    local center2DYMin = constraints.minY + ((targetDisplayHeight / 2) * (1/zoom))
-    local center2DXMax = constraints.maxX - ((targetDisplayWidth / 2) * (1/zoom))
-    local center2DYMax = constraints.maxY - ((targetDisplayHeight / 2) * (1/zoom))
+    local center2DXMin = constraints.left + horizontalMargin
+    local center2DYMin = constraints.top + verticalMargin
+    local center2DXMax = constraints.right - horizontalMargin
+    local center2DYMax = constraints.bottom - verticalMargin
     
     center2DXNew = mathutils.clamp(center2DXNew, center2DXMin, center2DXMax)
+    local wasClampX = mathutils.lastClampRestrained
     center2DYNew = mathutils.clamp(center2DYNew, center2DYMin, center2DYMax)
-    
+    local wasClampY = mathutils.lastClampRestrained
+
+    -- If the view area is wider than the constrained area width - set the center x to the horizontal center of the constrained area.
+    local constraintsWidth = constraints.right - constraints.left
+    local viewAreaWidth = 2 * horizontalMargin
+    if viewAreaWidth > constraintsWidth  then
+        center2DXNew = (constraints.right + constraints.left) / 2
+        print(center2DXNew .. " " .. center2DYNew)
+    end
+
+    -- If the view area is higher than the constrained area height - set the center y to the vertical center of the constrained area.
+    local constraintsHeight = constraints.bottom - constraints.top
+    local viewAreaHeight = 2 * verticalMargin
+    if viewAreaHeight > constraintsHeight then
+        center2DYNew = (constraints.bottom + constraints.top) / 2
+    end
+
     local center2DNew = mathutils.Vector2:new(center2DXNew, center2DYNew)
-    
     local newViewCenter = self.isoView:unprojectWorld(center2DNew, viewCenter.z)
     
     return newViewCenter

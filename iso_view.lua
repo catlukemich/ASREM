@@ -1,11 +1,10 @@
-local constants = require("constants")
 local iso_zoomer = require("iso_zoomer")
 local iso_scroller = require("iso_scroller")
 local iso_sprite = require("iso_sprite")
-local mathutils = require("mathutils");
+local mathutils = require("mathutils")
+local view_constants = require("view_constants")
 
 local iso_view = {}
-
 
 function iso_view:new(sceneView)
     local o = {}
@@ -44,7 +43,6 @@ end
 function iso_view:insertCollection(isoSpriteCollection)
     for key, sprite in pairs(isoSpriteCollection) do 
         if type(sprite) == "table" then
-            print("inserting:" .. sprite.name)
             self:insert(sprite)
             sprite:updatePosition()
         end
@@ -82,8 +80,8 @@ function iso_view:applyMask(mask)
 end
 
 -- Constrain scrolling of the view to a given 2d coordinates, so that view won't show objects beyond this bounds.
-function iso_view:constrainViewArea(minX, minY, maxX, maxY)
-    self.viewConstraints = {minX = minX, minY = minY, maxX = maxX, maxY = maxY}
+function iso_view:constrainViewArea(left, top, right, bottom)
+    self.viewConstraints = {left = left, top = top, right = right, bottom = bottom}
 end
 
 function iso_view:unConstrainViewArea()
@@ -96,13 +94,13 @@ function iso_view:project(location, parent, zoom, center)
     center = center or self.center
     local x, y
     if (parent == nil or (parent and parent.name == "Scene View")) then
-        x = (location.x - center.x - location.y + center.y) * constants.HALF_TILE_WIDTH * zoom
-        y = (location.x - center.x + location.y - center.y) * constants.HALF_TILE_HEIGHT * zoom - (location.z - center.z) * constants.V_STEP * zoom
+        x = (location.x - center.x - location.y + center.y) * view_constants.HALF_TILE_WIDTH * zoom
+        y = (location.x - center.x + location.y - center.y) * view_constants.HALF_TILE_HEIGHT * zoom - (location.z - center.z) * view_constants.V_STEP * zoom
         x = x + display.contentWidth / 2
         y = y + display.contentHeight /  2
     else
-        x = (location.x - location.y) * constants.HALF_TILE_WIDTH 
-        y = (location.x  + location.y) * constants.HALF_TILE_HEIGHT  - (location.z) * constants.V_STEP 
+        x = (location.x - location.y) * view_constants.HALF_TILE_WIDTH 
+        y = (location.x  + location.y) * view_constants.HALF_TILE_HEIGHT  - (location.z) * view_constants.V_STEP 
     end
     return x, y
 end
@@ -113,10 +111,12 @@ end
 -- Params:
 -- - location - mathutils.Vector3 instance or any table with x, y and z members.
 function iso_view:projectWorld(location)
-    local x, y
-    
-    x = (location.x - location.y) * constants.HALF_TILE_WIDTH 
-    y = (location.x + location.y) * constants.HALF_TILE_HEIGHT - (location.z) * constants.V_STEP
+    local htw = view_constants.HALF_TILE_WIDTH * view_constants.INITIAL_ZOOM -- The original half tile width.
+    local hth = view_constants.HALF_TILE_HEIGHT * view_constants.INITIAL_ZOOM -- and half tile height
+    local v_step = view_constants.V_STEP * view_constants.INITIAL_ZOOM -- and vertical step
+
+    local x = (location.x - location.y) * htw
+    local y = (location.x + location.y) * hth - (location.z) * v_step
    
     return x, y
 end
@@ -129,10 +129,11 @@ end
 -- - Instance of mathutils.Vector3 
 function iso_view:unprojectWorld(position, zValue, zoom)
     zoom = zoom or self.zoom
-    local htw = constants.HALF_TILE_WIDTH
-    local hth = constants.HALF_TILE_HEIGHT
+    local htw = view_constants.HALF_TILE_WIDTH * view_constants.INITIAL_ZOOM -- The original half tile width.
+    local hth = view_constants.HALF_TILE_HEIGHT * view_constants.INITIAL_ZOOM -- and half tile height
+    local v_step = view_constants.V_STEP * view_constants.INITIAL_ZOOM -- and vertical step
 
-    local locationX = (position.x * hth + position.y * htw + hth * constants.V_STEP * zValue) / (2 * htw * hth)
+    local locationX = (position.x * hth + position.y * htw + hth * v_step * zValue) / (2 * htw * hth)
     local locationY = locationX - position.x / htw
 
     return mathutils.Vector3:new(locationX, locationY, zValue)

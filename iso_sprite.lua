@@ -1,8 +1,11 @@
 local constants = require("constants")
 local mathutils = require("mathutils")
 local json = require("json")
-local iso_sprite = {}
 
+local utils = require("utils");
+
+
+local iso_sprite = {}
 
 function iso_sprite.createSpritesCollection()
     local collection = {}
@@ -25,14 +28,31 @@ function iso_sprite.createSpritesCollection()
         return collection[spriteName]
     end
     
+    --- Apply each object in the collection a layer.
+    -- The layer index is taken from the layers dictionary object that maps from layer name to it's index.
+    -- Every sprite in the collection must have a layer property that holds the name of the layer the object
+    -- appears on.
+    --- @param layers table The map from layer name to layer index. 
+    function collection:applyToLayers(layers)
+        for _, sprite in pairs(self) do
+            if type(sprite) == "table" then
+                sprite.layer = layers[sprite.layer_name]
+                print(sprite.name)
+                print(sprite.layer_name)
+            end
+        end
+    end
+
     return collection
 end
 
 function iso_sprite.loadFromMultipleSpritesFile(directoryPath, spritesFilename)
-    local filePath = system.pathForFile(directoryPath .. "/" .. spritesFilename, system.ResourceDirectory)
-    local decodedJSON = json.decodeFile(filePath)
+    local filepath = spritesFilename and directoryPath .. "/" .. spritesFilename or directoryPath -- Selection operator, kinda
+
+    local pathForFile = system.pathForFile(filepath)
+    local decodedJSON = json.decodeFile(pathForFile)
     if decodedJSON == nil then
-        error("Cant load multiple sprites from path: " .. directoryPath .. "/" .. spritesFilename )
+        error("Cant load multiple sprites from path: " .. filepath )
     end
 
     local collection = iso_sprite.createSpritesCollection()
@@ -40,7 +60,6 @@ function iso_sprite.loadFromMultipleSpritesFile(directoryPath, spritesFilename)
     for i, spriteData in pairs(decodedJSON) do
         local sprFileName = spriteData.sprfile
         local sprite = iso_sprite.loadFromSingleSpriteFile(directoryPath, sprFileName)
-        
         collection:insert(sprite)
     end
 
@@ -53,17 +72,21 @@ end
 -- - Path to the sprite's image
 -- - Anchor of the image
 -- - Location of the sprite in the world coordintates
-function iso_sprite.loadFromSingleSpriteFile(directoryPath, sprPath) 
-    local decodedJSON = json.decodeFile(directoryPath .. "/" .. sprPath)
+function iso_sprite.loadFromSingleSpriteFile(directoryPath, sprFilename) 
+    local filepath = sprFilename and directoryPath .. "/" .. sprFilename or directoryPath -- Selection operator, kinda
+    directoryPath = utils.getDirpath(filepath)
+
+    local decodedJSON = json.decodeFile(filepath)
     if decodedJSON == nil then
-        error("Cant load sprite from path: " .. directoryPath .. "/" .. sprPath )
+        error("Cant load sprite from path: " .. filepath )
     end
     local imagePath  = directoryPath .. "/" .. decodedJSON.image
     local location = decodedJSON.location
     local anchor = decodedJSON.anchor
     local size = decodedJSON.size
     local sprite = iso_sprite.createFromImage(imagePath, size.width, size.height)
-    sprite.name = string.sub(sprPath, 0, #sprPath - 4)
+    sprite.name = decodedJSON.name
+    sprite.layer_name = decodedJSON.layer_name
     sprite.anchorX = anchor.anchorX
     sprite.anchorY = anchor.anchorY
     sprite:setLocation(location)
@@ -120,8 +143,43 @@ function iso_sprite.createFromObject(object)
     return object
 end
 
-function iso_sprite.createMultiDirectional()
-    -- TODO
+function iso_sprite.createMultiDirectional(sheetFilepath, numDirections, imageWidth, imageHeight)
+    local iso_curve = require("iso_curve")
+
+    local imageSheet = graphics.newImageSheet( sheetFilepath, {
+        width = imageWidth,
+        height = imageHeight,
+        numFrames = numDirections,
+
+        sheetContentWidth = imageWidth * numDirections,
+        sheetContentHeight = imageHeight
+    } )
+
+    local sprite = display.newSprite( imageSheet, {
+        start = 1,
+        count = numDirections,
+        time = 100, -- Whatever.. The current frame will never change as the animation will be always paused.
+        loopCount = 0
+    })
+    iso_sprite.applyIsometricProperties(sprite)
+
+    function sprite:setRotation(zAxisRotationDegrees)
+        local angleBetween = 360 / numDirections
+        local index = math.round(zAxisRotationDegrees / angleBetween) + 1
+        -- print(index)
+        sprite:setFrame(index)
+    end
+    
+    sprite:pause()
+
+    local traveler = iso_curve.makeCurveTraveler(sprite)
+
+    function traveler:update(time)
+        local angle = traveler:updateTraveler(time)
+        traveler:setRotation(angle)
+    end
+
+    return traveler
 end
 
 function iso_sprite.applyIsometricProperties(displayObject) 

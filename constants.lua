@@ -2,8 +2,12 @@ local constants = {}
 
 constants.outlineColor = {70/255, 70/255, 70/255}
 constants.hoverColor = {0.0, 0.0, 0.0}
-constants.HALF_TILE_WIDTH = 256
-constants.HALF_TILE_HEIGHT = 128
-constants.V_STEP = 58
+
+constants.layers = {}
+
+constants.layers["Grass"] = 0
+constants.layers["Ground"] = 1
+constants.layers["Asphalt"] = 2
+constants.layers["Objects"] = 3
 
 return constants

@@ -1,1 +1,18 @@
-{"image": "factory.png", "location": {"x": -1.0076662446794802, "y": -2.726793591930297, "z": 0.0}, "anchor": {"anchorX": 0.4999994422637492, "anchorY": 0.5000008608459846}, "size": {"width": 716, "height": 397}}
+{
+  "name": "factory",
+  "layer_name": "Objects",
+  "image": "factory.png",
+  "location": {
+    "x": -1.0076662446794802,
+    "y": -2.726793591930297,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.4999994422637492,
+    "anchorY": 0.5000008608459846
+  },
+  "size": {
+    "width": 716,
+    "height": 397
+  }
+}

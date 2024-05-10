@@ -26,6 +26,14 @@ function mathutils.Vector3:distance(other)
     return math.sqrt(dx * dx + dy * dy + dz * dz)
 end
 
+function mathutils.Vector3:length()
+    local origin = mathutils.Vector3:new(0, 0, 0)
+    return origin:distance(self)
+end
+
+function mathutils.Vector3:dot(other)
+    return self.x * other.x + self.y * other.y + self.z * other.z
+end
 
 mathutils.Vector2 = {}
 
@@ -39,14 +47,18 @@ function mathutils.Vector2:new(x, y)
     return o
 end
 
+mathutils.lastClampRestrained = false
 
 function mathutils.clamp(value, min, max)
     if value > max then
+        mathutils.lastClampRestrained = true
         return max
     elseif value < min then
+        mathutils.lastClampRestrained = true
         return min
     end
 
+    mathutils.lastClampRestrained = false
     return value
 end
 

@@ -1,1 +1,18 @@
-{"image": "park 1.png", "location": {"x": 0.9484732782343741, "y": 2.194444079109374, "z": 0.0}, "anchor": {"anchorX": 0.4791969992269602, "anchorY": 0.47403762084970946}, "size": {"width": 453, "height": 315}}
+{
+  "name": "park 1",
+  "layer_name": "Objects",
+  "image": "park 1.png",
+  "location": {
+    "x": 0.9484732782343741,
+    "y": 2.194444079109374,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.4791969992269602,
+    "anchorY": 0.47403762084970946
+  },
+  "size": {
+    "width": 453,
+    "height": 315
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "terrain",
+  "layer_name": "Ground",
+  "image": "terrain.png",
+  "location": {
+    "x": -0.009663834140818839,
+    "y": -0.005382127422455252,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.38283133780947065,
+    "anchorY": 0.940219514161801
+  },
+  "size": {
+    "width": 2693,
+    "height": 2155
+  }
+}

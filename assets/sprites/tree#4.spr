@@ -1,1 +1,18 @@
-{"image": "tree#4.png", "location": {"x": -2.1085652872658094, "y": -1.9204100805474273, "z": 0.0}, "anchor": {"anchorX": 0.5000075502559559, "anchorY": 1.000001190329043}, "size": {"width": 76, "height": 129}}
+{
+  "name": "tree#4",
+  "layer_name": "Objects",
+  "image": "tree#4.png",
+  "location": {
+    "x": -2.1085652872658094,
+    "y": -1.9204100805474273,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.5000075502559559,
+    "anchorY": 1.000001190329043
+  },
+  "size": {
+    "width": 76,
+    "height": 129
+  }
+}

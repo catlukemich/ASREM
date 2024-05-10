@@ -10,7 +10,6 @@ function gestures.enableMultitouchSimulation()
     local lastMouseEvent = nil
 
     local function onKeyEvent(event)
-        print(event.keyName)
         if lastMouseEvent and event.keyName == "m" then
             lastMouseEvent.id = 1
             if event.phase == "down" then
@@ -108,10 +107,8 @@ function gestures.onPinch(listener, event)
 		end
 	end
 	if ( "began" == phase ) then
-        print("Pinch function begin")
 		-- Set touch focus on first "began" event
 		if not listener.isFocus then
-            print("Focus gaining")
 			-- display.currentStage:setFocus( listener )
 			listener.isFocus = true
 			-- Reset "previousTouches"
@@ -131,7 +128,6 @@ function gestures.onPinch(listener, event)
 					listener.distance = d
 					listener.xScaleOriginal = listener.xScale
 					listener.yScaleOriginal = listener.yScale
-					--print( "Distance: " .. self.distance )
 				end
 			end
 		end
@@ -155,7 +151,6 @@ function gestures.onPinch(listener, event)
 				if ( dx and dy ) then
 					local newDistance = math.sqrt( dx*dx + dy*dy )
 					local scale = newDistance / listener.distance
-					--print( "newDistance(" ..newDistance .. ") / distance(" .. self.distance .. ") = scale("..  scale ..")" )
 					if ( scale > 0 ) then
                         listener.listenerFunction(scale)
 					end

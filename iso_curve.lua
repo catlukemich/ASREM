@@ -4,10 +4,9 @@ local iso_sprite = require("iso_sprite")
 
 local iso_curve = {}
 
--- Parse curves from a file containing curves data
--- Params:
--- filePath - the path to the file in the resources directory to use for parsing
--- join - whether to join the parsed curves together (join their ends and beginnings) - defaults to true
+--- Parse curves from a file containing curves data
+-- @param filePath - the path to the file in the resources directory to use for parsing
+-- @param join - whether to join the parsed curves together (join their ends and beginnings) - defaults to true
 function iso_curve.parseCurves(filePath, join)
     if join ~= false then join = true end
     local path = system.pathForFile(filePath)
@@ -113,12 +112,11 @@ function iso_curve.applyConnectionProperties(curve)
       
 end
 
--- Create an isometric curve that can be displayed on the screen:
--- Params: 
--- bezier: bezier curve used for the display curve
--- isoView: the isometric view used for the displaying of the curve
--- segments: number of segments of the curve (this curve isn't strictly a curve - it's a collection of lines)
--- markDirection: whether to use start and end markings (the start will be marked by a rectange, the end - by circle) - defaults to nil
+---Create an isometric curve that can be displayed on the screen:
+---@param bezier  iso_curve.Bezier Bezier curve used for the display curve
+---@param isoView iso_view.IsoView Isometric view used for the displaying of the curve
+---@param segments number Number of segments of the curve (this curve isn't strictly a curve - it's a collection of lines)
+---@param markDirection boolean A flag indicating whether to use start and end markings (the start will be marked by a rectange, the end - by circle) - defaults to nil
 function iso_curve.newDisplayCurve(bezier, isoView, segments, markDirection)
     local group = display.newGroup()
     iso_sprite.applyIsometricProperties(group)
@@ -183,10 +181,12 @@ function iso_curve.makeCurveTraveler(isoSprite)
         traveler.step = distance
     end
 
-    function traveler:update(time)
+    function traveler:updateTraveler(time)
+        local previousLocation = traveler.curve:interpolate(traveler.t)
         traveler.t = traveler.t + time / 100
-        local location = traveler.curve:interpolate(traveler.t)
-        traveler:setLocation(location)
+        local newLocation = traveler.curve:interpolate(traveler.t)
+        
+        traveler:setLocation(newLocation)
         if traveler.t > 1 then
             local connections = traveler.curve.outcomingConnections
             if #connections > 0 then
@@ -195,6 +195,22 @@ function iso_curve.makeCurveTraveler(isoSprite)
             end
             traveler.t = 0
         end
+
+        local xForward = mathutils.Vector3:new(1,0,0)
+        local toVector = mathutils.Vector3:new(newLocation.x - previousLocation.x, newLocation.y - previousLocation.y, 0)
+        local length = toVector:length()
+        local atan = math.atan(toVector.y / toVector.x)
+        local dot = xForward:dot(toVector)
+        local degs = math.deg(atan)
+        if dot < 0 then
+            degs = 180 + degs
+        end
+        -- print(degs)
+        return degs
+    end
+
+    function traveler:update(time)
+        traveler:updateTraveler(time)
     end
 
     return traveler

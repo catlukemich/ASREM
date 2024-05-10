@@ -5,6 +5,7 @@ local iso_sprite   = require("iso_sprite")
 local iso_curve = require("iso_curve")
 local mathutils = require("mathutils")
 local utils = require("utils");
+local constants = require("constants");
 
 local scene = composer.newScene();
 
@@ -20,7 +21,7 @@ function scene:show(event)
     if (event.phase == "will") then
         composer.showOverlay("game_hud");
         self.isoView:enableScrolling();
-        self.isoView:constrainViewArea(-1345 / 3, -1794 / 3, 1345 / 3, 1794 / 3)
+        self.isoView:constrainViewArea(-1345, -1794, 1345, 1794)
         
         self:loadSprites()
         self:enableMouseZooming()
@@ -37,25 +38,14 @@ function scene:hide(event)
 end
 
 function scene:loadSprites()
-    -- -- Create the grass underneath everything:
-    -- local grassTexture = graphics.newTexture({type = "image", filename = "assets/images/grass_texture.png"} )
-    -- local grass = display.newRect(0, 0, 5000, 5000)
-    -- grass.fill = {
-    --     type = "image",
-    --     filename = grassTexture.filename,
-    --     baseDir = grassTexture.baseDir,
-    -- }
-    -- grass.fill.scaleX = 0.4
-    -- grass.fill.scaleY = 0.4
-    -- local grassSprite = iso_sprite.createFromObject(grass)
-    -- grassSprite.layer = -10
-    -- self.isoView:insert(grassSprite)
-
-    local grassSprite = iso_sprite.createFromImage("assets/images/grass.png" , 1345 * 2, 1794 * 2 )
+    --- Create the grass underneath everything:
+    local grassSprite = iso_sprite.createFromImage("assets/images/grass.png" , 1345 * 2, 1794 * 2)
+    grassSprite.layer = constants.layers["Grass"]
     self.isoView:insert(grassSprite)
 
     -- Load all the static sprites:
     local sprites = iso_sprite.loadFromMultipleSpritesFile("assets/sprites", "sprites.json")
+    sprites:applyToLayers(constants.layers)
     self.isoView:insertCollection(sprites)
 end
 
@@ -75,7 +65,6 @@ end
 
 function scene:enablePinchZooming(simulate)
     self.zoomOnPinch = function(pinchScale)
-        print(pinchScale)
         if pinchScale > 4 then
             self.isoView:setZoom(2, true)
         elseif pinchScale < 0.4 then
@@ -100,12 +89,16 @@ function scene:loadCurves(debug)
             self.isoView:insert(curve)
         end
 
-        local travelerSprite = display.newRect(-10, -10, 20, 20)
-        travelerSprite.layer = 2
-        iso_sprite.applyIsometricProperties(travelerSprite)
-        iso_curve.makeCurveTraveler(travelerSprite)
+        -- local travelerSprite = display.newRect(-10, -10, 20, 20)
+        -- travelerSprite.layer = constants.layers["Objects"]
+        -- iso_sprite.applyIsometricProperties(travelerSprite)
+        -- iso_curve.makeCurveTraveler(travelerSprite)
+        -- self.isoView:insert(travelerSprite)
+        -- travelerSprite:setCurve(beziers[4])
+        -- self.travelerSprite = travelerSprite
+        local travelerSprite = iso_sprite.createMultiDirectional("assets/vehicles/dodge/dodge.png",32, 100, 100)
+        travelerSprite.layer = constants.layers["Objects"]
         self.isoView:insert(travelerSprite)
-        print(beziers[1])
         travelerSprite:setCurve(beziers[4])
         self.travelerSprite = travelerSprite
     end

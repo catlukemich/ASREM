@@ -1,1 +1,18 @@
-{"image": "apartment.png", "location": {"x": 2.3202371740433287, "y": 0.9265022316088336, "z": 0.0}, "anchor": {"anchorX": 0.4999975809656213, "anchorY": 0.7149704741086136}, "size": {"width": 354, "height": 347}}
+{
+  "name": "apartment",
+  "layer_name": "Objects",
+  "image": "apartment.png",
+  "location": {
+    "x": 2.3202371740433287,
+    "y": 0.9265022316088336,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.4999975809656213,
+    "anchorY": 0.7149704741086136
+  },
+  "size": {
+    "width": 354,
+    "height": 347
+  }
+}
