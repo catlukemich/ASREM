@@ -3,93 +3,102 @@ local iso_scroller = require("iso_scroller")
 local iso_sprite = require("iso_sprite")
 local mathutils = require("mathutils")
 local view_constants = require("view_constants")
+local utils          = require("utils")
 
 local iso_view = {}
 
-function iso_view:new(sceneView)
-    local o = {}
-    local group = display.newGroup()
+iso_view.View = {}
 
-    sceneView.name = "Scene View"
-    o.isoGroup = iso_sprite.createFromObject(group)
-
-    sceneView:insert(o.isoGroup)
-
-    o.zoom = 1 -- The current zoom level: 1 - when zoomed out, 2 - when zoomed in
-    o.center = {x = 0, y = 0, z = 0}
-
-    o.isoGroup.isoView = o
+function iso_view.View:new(sceneView)
+    local isoView = {}
     
-    setmetatable(o,self)
+    local group = display.newGroup()
+    
+    sceneView.name = "Scene View"
+    isoView.isoGroup = iso_sprite.createFromObject(group)
+    sceneView:insert(isoView.isoGroup)
+    
+    isoView.collection = iso_sprite.Collection:new()
+    
+    isoView.zoom = 1 -- The current zoom level: 1 - when zoomed out, 2 - when zoomed in
+    isoView.center = {x = 0, y = 0, z = 0}
+    
+    isoView.isoGroup.isoView = isoView
+    
+    setmetatable(isoView, self)
     self.__index = self
 
-    o.isoGroup:setLocation({x = 0, y = 0, z = 0})
+    isoView.isoGroup:setLocation({x = 0, y = 0, z = 0})
 
-    o.isoScroller = iso_scroller:new(o, o.isoGroup)
-    o.isoZoomer = iso_zoomer:new(o, o.isoGroup)
+    isoView.isoScroller = iso_scroller:new(isoView, isoView.isoGroup)
+    isoView.isoZoomer = iso_zoomer:new(isoView, isoView.isoGroup)
     
-    return o
+    return isoView
 end
 
-function iso_view:insert(isoSprite)
+
+function iso_view.View:insert(isoSprite)
     isoSprite.isoView = self
     isoSprite:updateBounds()
     isoSprite:updatePosition()
+    self.collection:insert(isoSprite)
     self.isoGroup:insert(isoSprite)
     self:sort()
 end
 
+function iso_view.View:get(spriteName)
+    return self.collection:get(spriteName)
+end
 
-function iso_view:insertCollection(isoSpriteCollection)
+function iso_view.View:insertCollection(isoSpriteCollection)
     for key, sprite in pairs(isoSpriteCollection) do 
-        if type(sprite) == "table" then
-            self:insert(sprite)
-            sprite:updatePosition()
-        end
+        self:insert(sprite)
+        sprite:updatePosition()
     end
 end
 
 
-function iso_view:remove(isoSprite)
+function iso_view.View:remove(isoSprite)
+    self.collection:remove(isoSprite)
     self.isoGroup:remove(isoSprite)
 end
 
 
-function iso_view:setZoom(zoom, doTransition)
+function iso_view.View:setZoom(zoom, doTransition)
     self.isoZoomer:setZoom(zoom, doTransition)
 end
 
 
-function iso_view:toggleZoom()
+function iso_view.View:toggleZoom()
     self.isoZoomer:toggleZoom()
 end
 
 
-function iso_view:enableScrolling()
+function iso_view.View:enableScrolling()
     self.isoScroller:enable()
 end
 
 
-function iso_view:disableScrolling()
+function iso_view.View:disableScrolling()
     self.isoScroller:disable()
 end
 
-function iso_view:applyMask(mask)
+function iso_view.View:applyMask(mask)
       self.mask = mask
       self.isoGroup:setMask(mask)
 end
 
 -- Constrain scrolling of the view to a given 2d coordinates, so that view won't show objects beyond this bounds.
-function iso_view:constrainViewArea(left, top, right, bottom)
+function iso_view.View:constrainViewArea(left, top, right, bottom)
     self.viewConstraints = {left = left, top = top, right = right, bottom = bottom}
 end
 
-function iso_view:unConstrainViewArea()
+function iso_view.View:unConstrainViewArea()
     self.viewConstraints = nil
 end
 
 -- Utility function from projecting from iso world coordinates to screen coordintates
-function iso_view:project(location, parent, zoom, center)
+function iso_view.View:project(location, parent, zoom, center)
     zoom = zoom or self.zoom
     center = center or self.center
     local x, y
@@ -110,7 +119,7 @@ end
 -- the view's center was at the same position as the world center.
 -- Params:
 -- - location - mathutils.Vector3 instance or any table with x, y and z members.
-function iso_view:projectWorld(location)
+function iso_view.View:projectWorld(location)
     local htw = view_constants.HALF_TILE_WIDTH * view_constants.INITIAL_ZOOM -- The original half tile width.
     local hth = view_constants.HALF_TILE_HEIGHT * view_constants.INITIAL_ZOOM -- and half tile height
     local v_step = view_constants.V_STEP * view_constants.INITIAL_ZOOM -- and vertical step
@@ -127,7 +136,7 @@ end
 -- - position - the position to unproject, mathutils.Vector2 instance or any table with x and y members.
 -- Returns:
 -- - Instance of mathutils.Vector3 
-function iso_view:unprojectWorld(position, zValue, zoom)
+function iso_view.View:unprojectWorld(position, zValue, zoom)
     zoom = zoom or self.zoom
     local htw = view_constants.HALF_TILE_WIDTH * view_constants.INITIAL_ZOOM -- The original half tile width.
     local hth = view_constants.HALF_TILE_HEIGHT * view_constants.INITIAL_ZOOM -- and half tile height
@@ -140,7 +149,7 @@ function iso_view:unprojectWorld(position, zValue, zoom)
 end
 
 
-function iso_view:sort()
+function iso_view.View:sort()
     local function sortFunc(sprite1, sprite2)
         local layer1 = sprite1.layer or 0
         local layer2 = sprite2.layer or 0

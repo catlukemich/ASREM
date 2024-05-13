@@ -2,16 +2,18 @@ local composer     = require("composer")
 local gestures     = require("gestures")
 local iso_view     = require("iso_view")
 local iso_sprite   = require("iso_sprite")
-local iso_curve = require("iso_curve")
-local mathutils = require("mathutils")
-local utils = require("utils");
-local constants = require("constants");
+local iso_curve    = require("iso_curve")
+local mathutils    = require("mathutils")
+local utils        = require("utils");
+local constants    = require("constants");
 
 local scene = composer.newScene();
 
 
 function scene:create() 
-    local isoView = iso_view:new(self.view)
+    
+
+    local isoView = iso_view.View:new(self.view)
     self.isoView = isoView
 
     self.isoView:setZoom(1)
@@ -19,6 +21,8 @@ end
 
 function scene:show(event)
     if (event.phase == "will") then
+        self.lastTime = system.getTimer() / 1000
+
         composer.showOverlay("game_hud");
         self.isoView:enableScrolling();
         self.isoView:constrainViewArea(-1345, -1794, 1345, 1794)
@@ -45,7 +49,7 @@ function scene:loadSprites()
 
     -- Load all the static sprites:
     local sprites = iso_sprite.loadFromMultipleSpritesFile("assets/sprites", "sprites.json")
-    sprites:applyToLayers(constants.layers)
+    sprites:applyLayers(constants.layers)
     self.isoView:insertCollection(sprites)
 end
 
@@ -89,14 +93,8 @@ function scene:loadCurves(debug)
             self.isoView:insert(curve)
         end
 
-        -- local travelerSprite = display.newRect(-10, -10, 20, 20)
-        -- travelerSprite.layer = constants.layers["Objects"]
-        -- iso_sprite.applyIsometricProperties(travelerSprite)
-        -- iso_curve.makeCurveTraveler(travelerSprite)
-        -- self.isoView:insert(travelerSprite)
-        -- travelerSprite:setCurve(beziers[4])
-        -- self.travelerSprite = travelerSprite
         local travelerSprite = iso_sprite.createMultiDirectional("assets/vehicles/dodge/dodge.png",32, 100, 100)
+        -- travelerSprite:setFillColor(1,0,0,1);
         travelerSprite.layer = constants.layers["Objects"]
         self.isoView:insert(travelerSprite)
         travelerSprite:setCurve(beziers[4])
@@ -109,7 +107,21 @@ function scene:runUpdateLoop()
 end
 
 function scene:update()
-    self.travelerSprite:update(1)
+
+
+    local time = system.getTimer() / 1000
+    local deltaTime = time - self.lastTime
+    self.travelerSprite:update(deltaTime)
+    self.lastTime = time
+
+    -- if math.random(1000) == 1 then
+    --     local travelerSprite = iso_sprite.createMultiDirectional("assets/vehicles/dodge/dodge.png",32, 100, 100)
+    --     travelerSprite.layer = constants.layers["Objects"]
+    --     self.isoView:insert(travelerSprite)
+    --     travelerSprite:setCurve(beziers[4])
+    --     self.travelerSprite = travelerSprite
+    -- end
+
 end
 
 

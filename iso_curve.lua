@@ -181,31 +181,72 @@ function iso_curve.makeCurveTraveler(isoSprite)
         traveler.step = distance
     end
 
-    function traveler:updateTraveler(time)
+    ---Update the traveler self traveling logic.
+    ---@param time number Time in miliseconds indicating the elapsed time since last frame.
+    ---@param travelDistance number The distance that we want to travel, 0.01 by default 
+    ---@return number The angle on the z axis that the traveling object is rotated at the new point.
+    function traveler:updateTraveler(time, travelDistance)
+        travelDistance = travelDistance or 0.21
+        travelDistance = travelDistance * time
         local previousLocation = traveler.curve:interpolate(traveler.t)
-        traveler.t = traveler.t + time / 100
-        local newLocation = traveler.curve:interpolate(traveler.t)
-        
+        local newLocation = nil
+        local leftoverT = 0
+        local currentT = traveler.t
+        local didBreak = false
+        local curveStretchFactor = 1 / (self.curve:interpolate(0):distance(self.curve:interpolate(1)) * 3)
+        -- print(curveStretchFactor)
+        for i = 0,50 do
+            currentT = currentT + (travelDistance / 3) * curveStretchFactor
+            local candidateLocation = traveler.curve:interpolate(currentT)
+            local distanceToCandidateLocation = previousLocation:distance(candidateLocation)
+            if distanceToCandidateLocation > travelDistance then
+                local toVector = previousLocation:to(candidateLocation)
+                toVector:normalize()
+                toVector:multSelf(travelDistance)
+                newLocation = previousLocation:add(toVector)
+                if currentT > 1 then
+                    leftoverT = currentT - 1
+                end
+                traveler.t = currentT
+                didBreak = true
+                break
+            end
+
+            local toVector = previousLocation:to(candidateLocation)
+            toVector:normalize()
+            toVector:multSelf(travelDistance)
+            newLocation = previousLocation:add(toVector)
+            if currentT > 1 then
+                leftoverT = currentT - 1
+                traveler.t = currentT   
+                break
+            end
+            traveler.t = currentT            
+        end
+        -- local newLocation = traveler.curve:interpolate(traveler.t)
+        -- print(didBreak)
+
         traveler:setLocation(newLocation)
-        if traveler.t > 1 then
+        if traveler.t >= 1 then
             local connections = traveler.curve.outcomingConnections
             if #connections > 0 then
                 local randomCurve = connections[math.random(#connections)]
                 traveler:setCurve(randomCurve)
             end
-            traveler.t = 0
+            traveler.t = leftoverT
         end
 
         local xForward = mathutils.Vector3:new(1,0,0)
         local toVector = mathutils.Vector3:new(newLocation.x - previousLocation.x, newLocation.y - previousLocation.y, 0)
-        local length = toVector:length()
         local atan = math.atan(toVector.y / toVector.x)
         local dot = xForward:dot(toVector)
         local degs = math.deg(atan)
         if dot < 0 then
             degs = 180 + degs
         end
-        -- print(degs)
+        if(degs < 0)then
+            degs = 360 + degs
+        end
         return degs
     end
 

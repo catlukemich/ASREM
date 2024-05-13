@@ -7,45 +7,6 @@ local utils = require("utils");
 
 local iso_sprite = {}
 
-function iso_sprite.createSpritesCollection()
-    local collection = {}
-    
-    function collection:insert(sprite)
-        local spriteName = sprite.name
-        if spriteName ~= nil then 
-            collection[spriteName] = sprite
-        else
-            table.insert(collection, sprite)
-        end
-    end
-
-    function collection:get(spriteName) 
-        local sprite = collection[spriteName]
-        if sprite == nil then
-            error("No sprite named " .. spriteName);
-        end
-
-        return collection[spriteName]
-    end
-    
-    --- Apply each object in the collection a layer.
-    -- The layer index is taken from the layers dictionary object that maps from layer name to it's index.
-    -- Every sprite in the collection must have a layer property that holds the name of the layer the object
-    -- appears on.
-    --- @param layers table The map from layer name to layer index. 
-    function collection:applyToLayers(layers)
-        for _, sprite in pairs(self) do
-            if type(sprite) == "table" then
-                sprite.layer = layers[sprite.layer_name]
-                print(sprite.name)
-                print(sprite.layer_name)
-            end
-        end
-    end
-
-    return collection
-end
-
 function iso_sprite.loadFromMultipleSpritesFile(directoryPath, spritesFilename)
     local filepath = spritesFilename and directoryPath .. "/" .. spritesFilename or directoryPath -- Selection operator, kinda
 
@@ -55,9 +16,9 @@ function iso_sprite.loadFromMultipleSpritesFile(directoryPath, spritesFilename)
         error("Cant load multiple sprites from path: " .. filepath )
     end
 
-    local collection = iso_sprite.createSpritesCollection()
+    local collection = iso_sprite.Collection:new()
 
-    for i, spriteData in pairs(decodedJSON) do
+    for _, spriteData in pairs(decodedJSON) do
         local sprFileName = spriteData.sprfile
         local sprite = iso_sprite.loadFromSingleSpriteFile(directoryPath, sprFileName)
         collection:insert(sprite)
@@ -91,6 +52,46 @@ function iso_sprite.loadFromSingleSpriteFile(directoryPath, sprFilename)
     sprite.anchorY = anchor.anchorY
     sprite:setLocation(location)
     return sprite
+end
+
+
+function iso_sprite.createMultiDirectional(sheetFilepath, numDirections, imageWidth, imageHeight)
+    local iso_curve = require("iso_curve")
+
+    local imageSheet = graphics.newImageSheet( sheetFilepath, {
+        width = imageWidth,
+        height = imageHeight,
+        numFrames = numDirections,
+
+        sheetContentWidth = imageWidth * numDirections,
+        sheetContentHeight = imageHeight
+    } )
+
+    local sprite = display.newSprite( imageSheet, {
+        start = 1,
+        count = numDirections,
+        time = 100, -- Whatever.. The current frame will never change as the animation will be always paused.
+        loopCount = 0
+    })
+    iso_sprite.applyIsometricProperties(sprite)
+
+    function sprite:setRotation(zAxisRotationDegrees)
+        local angleBetween = 360 / numDirections
+        local index = (math.round(zAxisRotationDegrees  / angleBetween) ) % numDirections + 1
+        -- print(index)
+        sprite:setFrame(index)
+    end
+    
+    sprite:pause()
+
+    local traveler = iso_curve.makeCurveTraveler(sprite)
+
+    function traveler:update(time)
+        local angle = traveler:updateTraveler(time)
+        traveler:setRotation(angle)
+    end
+
+    return traveler
 end
 
 
@@ -143,44 +144,6 @@ function iso_sprite.createFromObject(object)
     return object
 end
 
-function iso_sprite.createMultiDirectional(sheetFilepath, numDirections, imageWidth, imageHeight)
-    local iso_curve = require("iso_curve")
-
-    local imageSheet = graphics.newImageSheet( sheetFilepath, {
-        width = imageWidth,
-        height = imageHeight,
-        numFrames = numDirections,
-
-        sheetContentWidth = imageWidth * numDirections,
-        sheetContentHeight = imageHeight
-    } )
-
-    local sprite = display.newSprite( imageSheet, {
-        start = 1,
-        count = numDirections,
-        time = 100, -- Whatever.. The current frame will never change as the animation will be always paused.
-        loopCount = 0
-    })
-    iso_sprite.applyIsometricProperties(sprite)
-
-    function sprite:setRotation(zAxisRotationDegrees)
-        local angleBetween = 360 / numDirections
-        local index = math.round(zAxisRotationDegrees / angleBetween) + 1
-        -- print(index)
-        sprite:setFrame(index)
-    end
-    
-    sprite:pause()
-
-    local traveler = iso_curve.makeCurveTraveler(sprite)
-
-    function traveler:update(time)
-        local angle = traveler:updateTraveler(time)
-        traveler:setRotation(angle)
-    end
-
-    return traveler
-end
 
 function iso_sprite.applyIsometricProperties(displayObject) 
     displayObject.location = mathutils.Vector3:new(0, 0, 0)
@@ -222,6 +185,53 @@ function iso_sprite.applyIsometricProperties(displayObject)
         end
     end
 
+end
+
+
+iso_sprite.Collection = {}
+
+function iso_sprite.Collection:new() 
+    local collection = {}
+    setmetatable(collection, self)
+    self.__index = self
+    return collection
+end
+
+function iso_sprite.Collection:insert(sprite)
+    local spriteName = sprite.name
+    if spriteName ~= nil then 
+        self[spriteName] = sprite
+    else
+        table.insert(self, sprite)
+    end
+end
+
+function iso_sprite.Collection:get(spriteName)
+    local sprite = self[spriteName]
+    if sprite == nil then
+        error("No sprite named " .. spriteName);
+    end
+
+    return sprite
+end
+
+function iso_sprite.Collection:remove(sprite)
+    local spriteName = sprite.name
+    if spriteName ~= nil then 
+        self[spriteName] = nil
+    else
+        table.remove(self, sprite)
+    end 
+end
+
+--- Apply each object in the collection a layer.
+-- The layer index is taken from the layers dictionary object that maps from layer name to it's index.
+-- Every sprite in the collection must have a layer property that holds the name of the layer the object
+-- appears on.
+function iso_sprite.Collection:applyLayers(layers)
+    for _, sprite in pairs(self) do
+        sprite.layer = layers[sprite.layer_name]
+    end
 end
 
 return iso_sprite

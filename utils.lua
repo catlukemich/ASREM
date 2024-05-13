@@ -20,5 +20,16 @@ function utils.getBasename(path)
     return path:match("[^/]*.lua$")
 end
 
+function utils.applyProperties(target, source)
+    print("applyProperties")
+    for name, property in pairs(source) do
+        print(name)
+        if target[name] and source[name] then
+            error("The target already posses property: " .. name)
+        end
+        target[name] = property
+    end
+end
+
 
 return utils
