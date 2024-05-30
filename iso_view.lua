@@ -46,8 +46,28 @@ function iso_view.View:insert(isoSprite)
     self:sort()
 end
 
-function iso_view.View:get(spriteName)
-    return self.collection:get(spriteName)
+
+--- Returns a collection of sprites that belong to the IsoView.
+--This collection should not be modified i.e. no new sprites 
+--should be added or removed from the collection (it is read-only).
+--@return iso_sprite.Collection The collection of all sprites.
+function iso_view.View:getSprites()
+    return self.collection
+end
+
+---Get collection of all the sprites that are assigned to a layer with a name given as the argument
+---@param layerName string The layer name.
+---@return table The collection of sprites that are on the layer given by a layerName
+function iso_view.View:getLayer(layerName)
+    local resultCollection = iso_sprite.Collection:new()
+
+    for _, sprite in pairs(self.collection) do
+        if sprite.layerName == layerName then
+            resultCollection:insert(sprite)
+        end
+    end
+
+    return resultCollection
 end
 
 function iso_view.View:insertCollection(isoSpriteCollection)

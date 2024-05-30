@@ -6,16 +6,91 @@
     "sprfile": "factory.spr"
   },
   {
+    "sprfile": "first sign#2.spr"
+  },
+  {
+    "sprfile": "first sign#3.spr"
+  },
+  {
+    "sprfile": "first sign#4.spr"
+  },
+  {
+    "sprfile": "first sign#5.spr"
+  },
+  {
+    "sprfile": "first sign#6.spr"
+  },
+  {
+    "sprfile": "first sign#7.spr"
+  },
+  {
+    "sprfile": "first sign.spr"
+  },
+  {
+    "sprfile": "house#2.spr"
+  },
+  {
+    "sprfile": "house#3.spr"
+  },
+  {
+    "sprfile": "house#4.spr"
+  },
+  {
+    "sprfile": "house.spr"
+  },
+  {
     "sprfile": "park 1.spr"
   },
   {
     "sprfile": "park 2.spr"
   },
   {
+    "sprfile": "parking#2.spr"
+  },
+  {
+    "sprfile": "parking#3.spr"
+  },
+  {
     "sprfile": "parking.spr"
   },
   {
     "sprfile": "roads.spr"
+  },
+  {
+    "sprfile": "stop sign#10.spr"
+  },
+  {
+    "sprfile": "stop sign#11.spr"
+  },
+  {
+    "sprfile": "stop sign#12.spr"
+  },
+  {
+    "sprfile": "stop sign#2.spr"
+  },
+  {
+    "sprfile": "stop sign#3.spr"
+  },
+  {
+    "sprfile": "stop sign#4.spr"
+  },
+  {
+    "sprfile": "stop sign#5.spr"
+  },
+  {
+    "sprfile": "stop sign#6.spr"
+  },
+  {
+    "sprfile": "stop sign#7.spr"
+  },
+  {
+    "sprfile": "stop sign#8.spr"
+  },
+  {
+    "sprfile": "stop sign#9.spr"
+  },
+  {
+    "sprfile": "stop sign.spr"
   },
   {
     "sprfile": "terrain.spr"
@@ -34,6 +109,12 @@
   },
   {
     "sprfile": "tree.spr"
+  },
+  {
+    "sprfile": "trees#2.spr"
+  },
+  {
+    "sprfile": "trees.spr"
   },
   {
     "sprfile": "water tower.spr"

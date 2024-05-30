@@ -47,7 +47,7 @@ function iso_sprite.loadFromSingleSpriteFile(directoryPath, sprFilename)
     local size = decodedJSON.size
     local sprite = iso_sprite.createFromImage(imagePath, size.width, size.height)
     sprite.name = decodedJSON.name
-    sprite.layer_name = decodedJSON.layer_name
+    sprite.layerName = decodedJSON.layer_name
     sprite.anchorX = anchor.anchorX
     sprite.anchorY = anchor.anchorY
     sprite:setLocation(location)
@@ -172,6 +172,11 @@ function iso_sprite.applyIsometricProperties(displayObject)
         self.location = location
         self:updateBounds()
         self:updatePosition()
+        self:onLocationChange(location)
+    end
+
+    function displayObject:onLocationChange(newLocation)
+        --   Abstract
     end
 
     function displayObject:updatePosition()
@@ -215,6 +220,21 @@ function iso_sprite.Collection:get(spriteName)
     return sprite
 end
 
+---Find all sprites that match the passed in string and return it
+--as a subcollection.
+---@param pattern string The pattern to match against the names 
+function iso_sprite.Collection:findall(pattern)
+    local resultCollection = iso_sprite.Collection:new()
+
+    for name, sprite in pairs(self) do
+        if string.find( name, pattern ) then
+            resultCollection:insert(sprite)
+        end
+    end
+
+    return resultCollection
+end
+
 function iso_sprite.Collection:remove(sprite)
     local spriteName = sprite.name
     if spriteName ~= nil then 
@@ -228,11 +248,20 @@ end
 -- The layer index is taken from the layers dictionary object that maps from layer name to it's index.
 -- Every sprite in the collection must have a layer property that holds the name of the layer the object
 -- appears on.
+---@param layers table A table that maps from layer name to it's display order index.
 function iso_sprite.Collection:applyLayers(layers)
     for _, sprite in pairs(self) do
-        sprite.layer = layers[sprite.layer_name]
+        sprite.layer = layers[sprite.layerName]
     end
 end
+
+
+function iso_sprite.Collection:setVisible(visible)
+    for _, sprite in pairs(self) do
+        sprite.isVisible = visible
+    end
+end
+
 
 return iso_sprite
 

@@ -1,0 +1,18 @@
+{
+  "name": "stop sign#7",
+  "layer_name": "Objects",
+  "image": "stop sign#7.png",
+  "location": {
+    "x": 1.4151205408591823,
+    "y": 1.420863185077546,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.49999629965148223,
+    "anchorY": 0.499993839047432
+  },
+  "size": {
+    "width": 13,
+    "height": 30
+  }
+}

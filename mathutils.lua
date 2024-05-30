@@ -30,7 +30,7 @@ function mathutils.Vector3:multSelf(factor)
     self.x = self.x * factor
     self.y = self.y * factor
     self.z = self.z * factor
-end
+end 
 
 function mathutils.Vector3:isNear(other, maxdist)
     local distance = self:distance(other)

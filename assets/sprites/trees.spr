@@ -1,0 +1,18 @@
+{
+  "name": "trees",
+  "layer_name": "Objects",
+  "image": "trees.png",
+  "location": {
+    "x": 0.6516280897665208,
+    "y": 4.4787116816416495,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.5000074818277476,
+    "anchorY": 0.499980316902035
+  },
+  "size": {
+    "width": 482,
+    "height": 280
+  }
+}

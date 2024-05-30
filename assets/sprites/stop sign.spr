@@ -1,0 +1,18 @@
+{
+  "name": "stop sign",
+  "layer_name": "Objects",
+  "image": "stop sign.png",
+  "location": {
+    "x": 3.4737764002341818,
+    "y": 1.734099513202545,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.50010671096518,
+    "anchorY": 0.5000005693830645
+  },
+  "size": {
+    "width": 13,
+    "height": 30
+  }
+}

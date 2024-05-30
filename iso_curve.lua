@@ -17,6 +17,9 @@ function iso_curve.parseCurves(filePath, join)
     end
     for _, curveData in pairs(decodedJSON) do
         local cp1 = curveData.cp1
+        if cp1 == nil then
+            error("cant' parse!")
+        end
         local cp2 = curveData.cp2
         local cp3 = curveData.cp3
         local cp4 = curveData.cp4
@@ -192,9 +195,7 @@ function iso_curve.makeCurveTraveler(isoSprite)
         local newLocation = nil
         local leftoverT = 0
         local currentT = traveler.t
-        local didBreak = false
         local curveStretchFactor = 1 / (self.curve:interpolate(0):distance(self.curve:interpolate(1)) * 3)
-        -- print(curveStretchFactor)
         for i = 0,50 do
             currentT = currentT + (travelDistance / 3) * curveStretchFactor
             local candidateLocation = traveler.curve:interpolate(currentT)
@@ -223,8 +224,7 @@ function iso_curve.makeCurveTraveler(isoSprite)
             end
             traveler.t = currentT            
         end
-        -- local newLocation = traveler.curve:interpolate(traveler.t)
-        -- print(didBreak)
+
 
         traveler:setLocation(newLocation)
         if traveler.t >= 1 then
