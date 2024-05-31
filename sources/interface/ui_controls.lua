@@ -1,5 +1,5 @@
-local ui = require("ui");
 local widget = require("widget");
+local ui = require("sources.interface.ui");
 
 local ui_controls = {};
 

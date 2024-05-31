@@ -1,8 +1,9 @@
-local constants = require("constants")
-local mathutils = require("mathutils")
 local json = require("json")
+local constants = require("sources.constants")
+local mathutils = require("sources.mathutils")
+local iso_collection = require("sources.iso.iso_collection")
 
-local utils = require("utils");
+local utils = require("sources.utils");
 
 
 local iso_sprite = {}
@@ -16,7 +17,7 @@ function iso_sprite.loadFromMultipleSpritesFile(directoryPath, spritesFilename)
         error("Cant load multiple sprites from path: " .. filepath )
     end
 
-    local collection = iso_sprite.Collection:new()
+    local collection = iso_collection.Collection:new()
 
     for _, spriteData in pairs(decodedJSON) do
         local sprFileName = spriteData.sprfile
@@ -56,7 +57,7 @@ end
 
 
 function iso_sprite.createMultiDirectional(sheetFilepath, numDirections, imageWidth, imageHeight)
-    local iso_curve = require("iso_curve")
+    local iso_curve = require("sources.iso.iso_curve")
 
     local imageSheet = graphics.newImageSheet( sheetFilepath, {
         width = imageWidth,
@@ -191,77 +192,6 @@ function iso_sprite.applyIsometricProperties(displayObject)
     end
 
 end
-
-
-iso_sprite.Collection = {}
-
-function iso_sprite.Collection:new() 
-    local collection = {}
-    setmetatable(collection, self)
-    self.__index = self
-    return collection
-end
-
-function iso_sprite.Collection:insert(sprite)
-    local spriteName = sprite.name
-    if spriteName ~= nil then 
-        self[spriteName] = sprite
-    else
-        table.insert(self, sprite)
-    end
-end
-
-function iso_sprite.Collection:get(spriteName)
-    local sprite = self[spriteName]
-    if sprite == nil then
-        error("No sprite named " .. spriteName);
-    end
-
-    return sprite
-end
-
----Find all sprites that match the passed in string and return it
---as a subcollection.
----@param pattern string The pattern to match against the names 
-function iso_sprite.Collection:findall(pattern)
-    local resultCollection = iso_sprite.Collection:new()
-
-    for name, sprite in pairs(self) do
-        if string.find( name, pattern ) then
-            resultCollection:insert(sprite)
-        end
-    end
-
-    return resultCollection
-end
-
-function iso_sprite.Collection:remove(sprite)
-    local spriteName = sprite.name
-    if spriteName ~= nil then 
-        self[spriteName] = nil
-    else
-        table.remove(self, sprite)
-    end 
-end
-
---- Apply each object in the collection a layer.
--- The layer index is taken from the layers dictionary object that maps from layer name to it's index.
--- Every sprite in the collection must have a layer property that holds the name of the layer the object
--- appears on.
----@param layers table A table that maps from layer name to it's display order index.
-function iso_sprite.Collection:applyLayers(layers)
-    for _, sprite in pairs(self) do
-        sprite.layer = layers[sprite.layerName]
-    end
-end
-
-
-function iso_sprite.Collection:setVisible(visible)
-    for _, sprite in pairs(self) do
-        sprite.isVisible = visible
-    end
-end
-
 
 return iso_sprite
 

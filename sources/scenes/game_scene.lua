@@ -1,20 +1,17 @@
 local composer     = require("composer")
-local constants    = require("constants");
-local gestures     = require("gestures")
-local iso_view     = require("iso_view")
-local iso_sprite   = require("iso_sprite")
-local iso_curve    = require("iso_curve")
-local entities     = require("entities");
-local mathutils    = require("mathutils")
-local utils        = require("utils");
+local constants    = require("sources.constants");
+local gestures     = require("sources.interface.gestures")
+local iso_view     = require("sources.iso.iso_view")
+local iso_sprite   = require("sources.iso.iso_sprite")
+local iso_curve    = require("sources.iso.iso_curve")
+local entities     = require("sources.entities");
 
 
 local scene = composer.newScene();
 
-
 function scene:create() 
     self.cars = {}
-
+ 
     local isoView = iso_view.View:new(self.view)
     self.isoView = isoView
 
@@ -25,7 +22,7 @@ function scene:show(event)
     if (event.phase == "will") then
         self.lastTime = system.getTimer() / 1000
 
-        composer.showOverlay("game_hud");
+        composer.showOverlay("sources.scenes.game_hud");
         self.isoView:enableScrolling();
         self.isoView:constrainViewArea(-1301, -1154, 1301, 1154)
         
@@ -57,11 +54,8 @@ function scene:loadSprites()
     sprites:applyLayers(constants.layers)
     self.isoView:insertCollection(sprites)
 
-    -- local trees = sprites:findall("tree")
-
-    local ground = self.isoView:getLayer("Ground")
-    ground:setVisible(false)
-    -- trees:setVisible(false) 
+    local objects = self.isoView:getLayer("Objects")
+    objects:setAlpha(0.1)
 end
 
 function scene:enableMouseZooming()
@@ -117,8 +111,6 @@ end
 
 
 function scene:update()
-
-
     local time = system.getTimer() / 1000
     local deltaTime = (time - self.lastTime) * 2
     self.lastTime = time
@@ -134,7 +126,7 @@ function scene:update()
          table.insert(self.cars, car)
     end
 
-    for i, car in ipairs(self.cars) do
+    for _, car in ipairs(self.cars) do
         car:update(deltaTime)
     end
 end
@@ -149,16 +141,11 @@ function scene:stopSorting()
    timer.cancel(self.sortTimer)
 end
 
-function scene:destroy()
-    
-end
+function scene:destroy() end
 
 scene:addEventListener("create" , scene )
 scene:addEventListener("show"   , scene )
 scene:addEventListener("hide"   , scene )
 scene:addEventListener("destroy", scene )
-
-
-
 
 return scene

@@ -1,5 +1,5 @@
-local constants = require("constants")
 local widget = require("widget")
+local constants = require("sources.constants")
 
 local ui = {}
 

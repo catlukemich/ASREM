@@ -1,6 +1,6 @@
 local json = require("json")
-local mathutils = require("mathutils")
-local iso_sprite = require("iso_sprite")
+local mathutils = require("sources.mathutils")
+local iso_sprite = require("sources.iso.iso_sprite")
 
 local iso_curve = {}
 

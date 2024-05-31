@@ -6,7 +6,8 @@
         "graphics",
         "Runtime",
         "system",
-        "timer"
+        "timer",
+        "require"
     ],
     "Lua.diagnostics.disable": [
         "trailing-space"
@@ -30,6 +31,11 @@
     "code-runner.showTerminal": false,
     "code-runner.executorMapByGlob": {
         "*.lua": "python H:\\Scripts\\send_window_message.py"
+    },
+    "files.exclude": {
+        "**/AndroidResources": true,
+        "**/Images.xcassets": true,
+        "**/LaunchScreen.storyboardc": true
     },
 
 }

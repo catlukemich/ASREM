@@ -1,5 +1,5 @@
-local iso_sprite = require("iso_sprite");
-local iso_curve = require("iso_curve");
+local iso_sprite = require("sources.iso.iso_sprite");
+local iso_curve = require("sources.iso.iso_curve");
 
 local entities = {}
 

@@ -1,9 +1,10 @@
-local iso_zoomer = require("iso_zoomer")
-local iso_scroller = require("iso_scroller")
-local iso_sprite = require("iso_sprite")
-local mathutils = require("mathutils")
-local view_constants = require("view_constants")
-local utils          = require("utils")
+local iso_zoomer = require("sources.iso.iso_zoomer")
+local iso_scroller = require("sources.iso.iso_scroller")
+local iso_sprite = require("sources.iso.iso_sprite")
+local mathutils = require("sources.mathutils")
+local view_constants = require("sources.iso.view_constants")
+local iso_collection = require("sources.iso.iso_collection")
+local utils          = require("sources.utils")
 
 local iso_view = {}
 
@@ -18,7 +19,7 @@ function iso_view.View:new(sceneView)
     isoView.isoGroup = iso_sprite.createFromObject(group)
     sceneView:insert(isoView.isoGroup)
     
-    isoView.collection = iso_sprite.Collection:new()
+    isoView.collection = iso_collection.Collection:new()
     
     isoView.zoom = 1 -- The current zoom level: 1 - when zoomed out, 2 - when zoomed in
     isoView.center = {x = 0, y = 0, z = 0}
@@ -59,7 +60,7 @@ end
 ---@param layerName string The layer name.
 ---@return table The collection of sprites that are on the layer given by a layerName
 function iso_view.View:getLayer(layerName)
-    local resultCollection = iso_sprite.Collection:new()
+    local resultCollection = iso_collection.Collection:new()
 
     for _, sprite in pairs(self.collection) do
         if sprite.layerName == layerName then

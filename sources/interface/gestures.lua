@@ -1,5 +1,3 @@
-
-
 local gestures = {}
 
 gestures.pinchListeners = {}

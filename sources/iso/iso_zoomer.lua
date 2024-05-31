@@ -1,5 +1,5 @@
 local widget = require("widget")
-local iso_sprite = require("iso_sprite")
+local iso_sprite = require("sources.iso.iso_sprite")
 
 local iso_zoomer = {}
 

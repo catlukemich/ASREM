@@ -1,9 +1,9 @@
-local ui = require("ui");
-local ui_controls = require("ui_controls")
 local composer = require("composer");
+local ui = require("sources.interface.ui");
+local ui_controls = require("sources.interface.ui_controls")
+
 
 local scene = composer.newScene();
-
 
 function scene:create() 
     self.upgradeButton = ui_controls.createCostActionButton("upgrade_icon.png", 19, 24, "Upgrade", 1000)

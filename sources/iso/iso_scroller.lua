@@ -1,5 +1,5 @@
-local view_constants = require("view_constants")
-local mathutils = require("mathutils")
+local view_constants = require("sources.iso.view_constants")
+local mathutils = require("sources.mathutils")
 
 local iso_scroller = {}
 
