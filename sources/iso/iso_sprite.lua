@@ -2,12 +2,17 @@ local json = require("json")
 local constants = require("sources.constants")
 local mathutils = require("sources.mathutils")
 local iso_collection = require("sources.iso.iso_collection")
-
 local utils = require("sources.utils");
 
-
+--- The iso sprite module for all the isometric sprites base elements.
 local iso_sprite = {}
 
+---Create a collection of isometric sprites from a file that contains
+---data describing multiple isometric sprites.
+---@param directoryPath string Path of the directory that's relative to the project main directory.
+---     Or the path of the multiple sprites file if the 2nd argument is omitted.
+---@param spritesFilename string Name of the file that's within the directory supplied as the 1st argument.
+---@return iso_collection.Collection The collection of sprites loaded.
 function iso_sprite.loadFromMultipleSpritesFile(directoryPath, spritesFilename)
     local filepath = spritesFilename and directoryPath .. "/" .. spritesFilename or directoryPath -- Selection operator, kinda
 
@@ -37,7 +42,6 @@ end
 function iso_sprite.loadFromSingleSpriteFile(directoryPath, sprFilename) 
     local filepath = sprFilename and directoryPath .. "/" .. sprFilename or directoryPath -- Selection operator, kinda
     directoryPath = utils.getDirpath(filepath)
-
     local decodedJSON = json.decodeFile(filepath)
     if decodedJSON == nil then
         error("Cant load sprite from path: " .. filepath )

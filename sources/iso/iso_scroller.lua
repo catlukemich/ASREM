@@ -1,8 +1,8 @@
 local view_constants = require("sources.iso.view_constants")
 local mathutils = require("sources.mathutils")
 
-local iso_scroller = {}
 
+local iso_scroller = {}
 
 function iso_scroller:new(isoView, isoGroup) 
     local o = {}
@@ -10,11 +10,19 @@ function iso_scroller:new(isoView, isoGroup)
     o.isoGroup = isoGroup
     o.startX = 0
     o.startY = 0
+    o.keyScrollOffset = mathutils.Vector3:new(0, 0, 0) 
     o.locked = false
-    o.handleTouch = function(event) 
+
+    -- A method that is responsible for reading the touch events and scrolling the iso view appropriately.
+    o.handleTouchScrolling = function(event) 
         o:moveView(event)
     end
-    
+
+    -- The method that gets run every 20ms and scrolls the iso view by certain amount.
+    o.handleKeyScrollng = function (event)
+        o:moveViewByKey(event)
+    end
+
     setmetatable(o,self)
     self.__index = self
     return o
@@ -27,14 +35,18 @@ end
 
 
 function iso_scroller:enable()
-    Runtime:addEventListener("touch", self.handleTouch)
+    Runtime:addEventListener("touch", self.handleTouchScrolling)
+    Runtime:addEventListener("key", self.handleKeyScrollng)
+    self.keyScrollTimer = timer.performWithDelay( 20, function ()
+        self:scrollByKeyOffset()
+    end, 0)
 end
-
 
 function iso_scroller:disable()
-    Runtime:removeEventListener("touch", self.handleTouch);
+    Runtime:removeEventListener("touch", self.handleTouchScrolling)
+    Runtime:removeEventListener("key", self.handleKeyScrollng)
+    timer.cancel( self.keyScrollTimer )
 end
-
 
 function iso_scroller:lock()
     self.locked = true
@@ -80,6 +92,51 @@ function iso_scroller:moveView(event)
 
         self.isoGroup:updatePosition()
     end
+end
+
+function iso_scroller:scrollByKeyOffset()
+    if self.locked then
+        return
+    end
+    local viewCenter = self.isoView.center
+    local zoom = self.isoView.zoom
+
+    -- Align the isoView's center's location basing on the x and y delta:
+    local multiplier = 1 / zoom
+    viewCenter.x = viewCenter.x + self.keyScrollOffset.x * multiplier
+    viewCenter.y = viewCenter.y + self.keyScrollOffset.y * multiplier
+
+    print(self.keyScrollOffset.x)
+
+    -- Constrain the view:
+    local newViewCenter = self:findViewConstrainedCenter(viewCenter)
+    viewCenter.x = newViewCenter.x
+    viewCenter.y = newViewCenter.y
+
+    self.isoGroup:updatePosition()
+end
+
+
+function iso_scroller:moveViewByKey(event)
+    if event.phase == "down" then
+        -- Scrolling by keyboard started
+        if event.keyName == "left" then
+            self.keyScrollOffset = mathutils.Vector3:new(-1, 1, 0) 
+        elseif event.keyName == "right" then
+            self.keyScrollOffset = mathutils.Vector3:new(1, -1, 0)
+        elseif event.keyName == "up" then
+            self.keyScrollOffset = mathutils.Vector3:new(-1, -1, 0)
+        elseif event.keyName == "down" then
+            self.keyScrollOffset = mathutils.Vector3:new(1, 1, 0)
+        end
+    else -- The key was pressed up.
+        if event.keyName == "left" or event.keyName == "right" or event.keyName == "up" or event.keyName == "down" then
+            -- Scrolling by keyboard ended.
+            self.keyScrollOffset = mathutils.Vector3:new(0, 0, 0) 
+        end
+    end
+
+    self.keyScrollOffset:multSelf(0.02)
 end
 
 function iso_scroller:findViewConstrainedCenter(viewCenter, targetZoom, targetDisplayWidth, targetDisplayHeight)
