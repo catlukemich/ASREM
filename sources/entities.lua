@@ -14,7 +14,7 @@ function entities.createCar(dirPath)
     car:insert(body)
     car:insert(mask)
 
-    -- Most popular car colors (RGB, with percentage)
+    -- Most popular car colors (RGB, with percentage):s
     local colors = {
         {1, 1, 1, 0.24},
         {0, 0, 0, 0.23},
@@ -24,7 +24,7 @@ function entities.createCar(dirPath)
         
     }
 
-    -- Generate a random color for the car.
+    -- Generate a random color for the car:
     local randomColor = colors[1]
     for _, color in pairs(colors) do
         local random = math.random(1000)
@@ -35,12 +35,25 @@ function entities.createCar(dirPath)
         end
     end
     mask:setFillColor(randomColor[1], randomColor[2], randomColor[3])
+    
+    -- ---- Apply clouds to the car: TODO: Do this if time allows.
+    -- -- Load the masked image:
+    -- local clouds = display.newImageRect("/assets/images/clouds.png", 1000, 1000 )
+    -- car:insert(clouds)
 
+    -- -- Load the alpha 
+    -- local alpha = iso_sprite.createMultiDirectional(dirPath .. "/" .. "alpha.png", numDirections, 96, 64) -- TODO: Refactor the size values into constants or deal with it any other way.
+
+    -- function car:onLocationChange(location)
+    --     x, y = self.isoView:project(location, self.isoView)
+    --     clouds.fill.x = (-x / 1000)
+    --     clouds.fill.y = (-y / 1000)
+    --     print(x, y)
+    -- end
     
     function car:setRotation(zAxisRotationDegrees)
         local angleBetween = 360 / numDirections
         local index = (math.round(zAxisRotationDegrees  / angleBetween) ) % numDirections + 1
-        -- print(index)
         body:setFrame(index)
         mask:setFrame(index)
     end
@@ -49,7 +62,9 @@ function entities.createCar(dirPath)
         local angle = car:updateTraveler(time)
         car:setRotation(angle)
     end
-      
+    
+
+
     return car
 end
 

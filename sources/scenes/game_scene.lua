@@ -9,13 +9,18 @@ local entities     = require("sources.entities");
 
 local scene = composer.newScene();
 
-function scene:create() 
-    self.cars = {}
- 
-    local isoView = iso_view.View:new(self.view)
-    self.isoView = isoView
 
+------------ MAIN SCENE FUNCTIONS ------------
+
+function scene:create() 
+    print(_VERSION)
+    self.isoView = iso_view.View:new(self.view)
     self.isoView:setZoom(1)
+    
+    self:loadSprites()
+    self:loadCurves(false)
+
+    self.cars = {}
 end
 
 function scene:show(event)
@@ -26,10 +31,8 @@ function scene:show(event)
         self.isoView:enableScrolling();
         self.isoView:constrainViewArea(-1301, -1154, 1301, 1154)
         
-        self:loadSprites()
         self:enableMouseZooming()
         self:enablePinchZooming(true)
-        self:loadCurves(false)
         self:startSorting()
         self:startUpdateLoop()
     end
@@ -43,6 +46,11 @@ function scene:hide(event)
     end
 end
 
+function scene:destroy() end
+
+
+------------ SCENE CREATION LOGIC ------------
+
 function scene:loadSprites()
     --- Create the grass underneath everything:
     local grassSprite = iso_sprite.createFromImage("assets/images/grass.png" , 1301 * 2, 1154 * 2)
@@ -55,8 +63,23 @@ function scene:loadSprites()
     self.isoView:insertCollection(sprites)
 
     local objects = self.isoView:getLayer("Objects")
-    objects:setAlpha(0.1)
+    objects:setAlpha(1)
 end
+
+function scene:loadCurves(debug)
+    self.beziers = iso_curve.parseCurves("assets/curves.json")
+    -- Debugging code:
+    if debug then
+        for _, bezier in ipairs(self.beziers) do
+            local curve = iso_curve.newDisplayCurve(bezier, self.isoView, 10, true)
+            curve.layer = 3
+            self.isoView:insert(curve)
+        end
+    end
+end
+
+
+------------ SCENE DISPLAY LOGIC ------------
 
 function scene:enableMouseZooming()
     self.zoomFunction = function (event)
@@ -87,28 +110,18 @@ function scene:enablePinchZooming(simulate)
     gestures.addPinchListener(self.zoomOnPinch)
 end
 
-function scene:loadCurves(debug)
-    self.beziers = iso_curve.parseCurves("assets/curves.json")
-
-    -- Debugging code:
-    if debug then
-        for _, bezier in ipairs(self.beziers) do
-            local curve = iso_curve.newDisplayCurve(bezier, self.isoView, 10, true)
-            curve.layer = 3
-            self.isoView:insert(curve)
-        end
-
-    end
+function scene:startSorting()
+    self.sortTimer = timer.performWithDelay( 300, function ()
+        self.isoView:sort()
+    end , 0 )
 end
 
 function scene:startUpdateLoop()
     self.updateTimer = timer.performWithDelay(30, function() self:update() end, 0)
 end
 
-function scene:stopUpdateLoop()
-    timer.cancel( self.updateTimer )
-end
 
+------------ SCENE UPDATE LOGIC ------------
 
 function scene:update()
     local time = system.getTimer() / 1000
@@ -131,21 +144,23 @@ function scene:update()
     end
 end
 
-function scene:startSorting()
-    self.sortTimer = timer.performWithDelay( 300, function ()
-        self.isoView:sort()
-    end , 0 )
-end
+
+------------ SCENE HIDING LOGIC ------------
 
 function scene:stopSorting()
    timer.cancel(self.sortTimer)
 end
 
-function scene:destroy() end
+function scene:stopUpdateLoop()
+    timer.cancel( self.updateTimer )
+end
 
-scene:addEventListener("create" , scene )
-scene:addEventListener("show"   , scene )
-scene:addEventListener("hide"   , scene )
-scene:addEventListener("destroy", scene )
+
+------------ SCENE EVENTS ASSIGNMENT ------------
+
+scene:addEventListener("create" , scene)
+scene:addEventListener("show"   , scene)
+scene:addEventListener("hide"   , scene)
+scene:addEventListener("destroy", scene)
 
 return scene

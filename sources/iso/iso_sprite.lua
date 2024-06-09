@@ -12,7 +12,7 @@ local iso_sprite = {}
 ---@param directoryPath string Path of the directory that's relative to the project main directory.
 ---     Or the path of the multiple sprites file if the 2nd argument is omitted.
 ---@param spritesFilename string Name of the file that's within the directory supplied as the 1st argument.
----@return iso_collection.Collection The collection of sprites loaded.
+---@return sources.iso.iso_collection.Collection The collection of sprites loaded.
 function iso_sprite.loadFromMultipleSpritesFile(directoryPath, spritesFilename)
     local filepath = spritesFilename and directoryPath .. "/" .. spritesFilename or directoryPath -- Selection operator, kinda
 
@@ -61,7 +61,7 @@ end
 
 
 function iso_sprite.createMultiDirectional(sheetFilepath, numDirections, imageWidth, imageHeight)
-    local iso_curve = require("sources.iso.iso_curve")
+    local iso_curve = require("sources.iso.iso_curve") -- Imported here to avoid circular import.
 
     local imageSheet = graphics.newImageSheet( sheetFilepath, {
         width = imageWidth,
@@ -83,7 +83,6 @@ function iso_sprite.createMultiDirectional(sheetFilepath, numDirections, imageWi
     function sprite:setRotation(zAxisRotationDegrees)
         local angleBetween = 360 / numDirections
         local index = (math.round(zAxisRotationDegrees  / angleBetween) ) % numDirections + 1
-        -- print(index)
         sprite:setFrame(index)
     end
     

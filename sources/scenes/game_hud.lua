@@ -43,7 +43,6 @@ function scene:onRentSliderChange(event)
 end
 
 function scene:onSpeedChange(speed) 
-    print(speed)
 end
 
 function scene:hide()

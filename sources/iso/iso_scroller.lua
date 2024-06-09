@@ -106,8 +106,6 @@ function iso_scroller:scrollByKeyOffset()
     viewCenter.x = viewCenter.x + self.keyScrollOffset.x * multiplier
     viewCenter.y = viewCenter.y + self.keyScrollOffset.y * multiplier
 
-    print(self.keyScrollOffset.x)
-
     -- Constrain the view:
     local newViewCenter = self:findViewConstrainedCenter(viewCenter)
     viewCenter.x = newViewCenter.x
@@ -167,7 +165,6 @@ function iso_scroller:findViewConstrainedCenter(viewCenter, targetZoom, targetDi
     local viewAreaWidth = 2 * horizontalMargin
     if viewAreaWidth > constraintsWidth  then
         center2DXNew = (constraints.right + constraints.left) / 2
-        print(center2DXNew .. " " .. center2DYNew)
     end
 
     -- If the view area is higher than the constrained area height - set the center y to the vertical center of the constrained area.
