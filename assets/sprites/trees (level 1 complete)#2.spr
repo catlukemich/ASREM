@@ -1,0 +1,18 @@
+{
+  "name": "trees (level 1 complete)#2",
+  "layer_name": "Objects",
+  "image": "trees (level 1 complete)#2.png",
+  "location": {
+    "x": 1.6989132460165208,
+    "y": 2.417770275391649,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.474282341802094,
+    "anchorY": 0.5127377676301628
+  },
+  "size": {
+    "width": 371,
+    "height": 270
+  }
+}

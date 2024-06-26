@@ -1,0 +1,18 @@
+{
+  "name": "Office Two (level 3 complete)",
+  "layer_name": "Objects",
+  "image": "Office Two (level 3 complete).png",
+  "location": {
+    "x": 2.3602043308225853,
+    "y": 0.4986405959114335,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.4999991418612985,
+    "anchorY": 0.7090146467471294
+  },
+  "size": {
+    "width": 797,
+    "height": 693
+  }
+}

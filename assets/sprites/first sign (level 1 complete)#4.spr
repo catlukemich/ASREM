@@ -1,0 +1,18 @@
+{
+  "name": "first sign (level 1 complete)#4",
+  "layer_name": "Objects",
+  "image": "first sign (level 1 complete)#4.png",
+  "location": {
+    "x": 1.0026135096091817,
+    "y": 1.719973341327545,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.5000498480310457,
+    "anchorY": 0.4999770898422638
+  },
+  "size": {
+    "width": 15,
+    "height": 30
+  }
+}

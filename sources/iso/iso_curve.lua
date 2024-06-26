@@ -23,7 +23,8 @@ function iso_curve.parseCurves(filePath, join)
         local cp2 = curveData.cp2
         local cp3 = curveData.cp3
         local cp4 = curveData.cp4
-        local bezier = iso_curve.newCubicBezier(cp1, cp2, cp3, cp4)
+        local bezier = mathutils.CubicBezier:new(cp1, cp2, cp3, cp4)
+        iso_curve.applyConnectionProperties(bezier)
         table.insert(beziers, bezier)
     end
 
@@ -39,57 +40,6 @@ function iso_curve.parseCurves(filePath, join)
 end
 
 
-function iso_curve.newQuadraticBezier(cp1, cp2, cp3)
-    -- Where control points are tables created by call to mathutils.newVector3
-
-    local bezier = {
-        cp1 = cp1,
-        cp2 = cp2,
-        cp3 = cp3
-    }
-
-    function bezier:interpolate(t)
-        local location = mathutils.Vector3:new(
-            (1 - t) * ((1-t) * self.cp1.x + t * self.cp2.x) + t * ((1 - t) * self.cp2.x + t * self.cp3.x),
-            (1 - t) * ((1-t) * self.cp1.y + t * self.cp2.y) + t * ((1 - t) * self.cp2.y + t * self.cp3.y),
-            (1 - t) * ((1-t) * self.cp1.z + t * self.cp2.z) + t * ((1 - t) * self.cp2.z + t * self.cp3.z)
-        )
-        return location
-    end
-
-    iso_curve.applyConnectionProperties(bezier)
-
-    return bezier
-end
-
-function iso_curve.newCubicBezier(cp1, cp2, cp3, cp4)
-    -- Where control points are tables created by call to mathutils.newVector3
-    local bezier = {
-        cp1 = cp1,
-        cp2 = cp2,
-        cp3 = cp3,
-        cp4 = cp4
-    }
-
-    function bezier:interpolate(t)
-        local quadraticBezier1 = iso_curve.newQuadraticBezier(self.cp1, self.cp2, self.cp3)
-        local quadraticBezier2 = iso_curve.newQuadraticBezier(self.cp2, self.cp3, self.cp4)
-    
-        local itpl1 = quadraticBezier1:interpolate(t)
-        local itpl2 = quadraticBezier2:interpolate(t)
-
-        local location = mathutils.Vector3:new(
-            (1 - t) * itpl1.x + t * itpl2.x,
-            (1 - t) * itpl1.y + t * itpl2.y,
-            (1 - t) * itpl1.z + t * itpl2.z
-        )
-        return location
-    end
-
-    iso_curve.applyConnectionProperties(bezier)
-
-    return bezier
-end
 
 function iso_curve.applyConnectionProperties(curve)
     curve.incomingConnections = {}

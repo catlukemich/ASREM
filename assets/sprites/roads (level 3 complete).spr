@@ -1,0 +1,18 @@
+{
+  "name": "roads (level 3 complete)",
+  "layer_name": "Asphalt",
+  "image": "roads (level 3 complete).png",
+  "location": {
+    "x": 0.6718127283591815,
+    "y": 0.8138756850775457,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.5000005954290508,
+    "anchorY": 0.49999946846868515
+  },
+  "size": {
+    "width": 3163,
+    "height": 2038
+  }
+}

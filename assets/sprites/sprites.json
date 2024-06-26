@@ -1,48 +1,111 @@
 [
   {
-    "sprfile": "apartment.spr"
+    "sprfile": "apartment  (level 1 complete).spr"
   },
   {
-    "sprfile": "factory.spr"
+    "sprfile": "cloud1.spr"
+  },
+  {
+    "sprfile": "cloud2#2.spr"
+  },
+  {
+    "sprfile": "cloud2#3.spr"
+  },
+  {
+    "sprfile": "cloud2.spr"
+  },
+  {
+    "sprfile": "cloud3.spr"
+  },
+  {
+    "sprfile": "cloud4.spr"
+  },
+  {
+    "sprfile": "cloud5#2.spr"
+  },
+  {
+    "sprfile": "cloud5#3.spr"
+  },
+  {
+    "sprfile": "cloud5.spr"
+  },
+  {
+    "sprfile": "cloud6.spr"
+  },
+  {
+    "sprfile": "cloud7.spr"
+  },
+  {
+    "sprfile": "factory (level 1 complete).spr"
+  },
+  {
+    "sprfile": "first sign (level 1 complete)#2.spr"
+  },
+  {
+    "sprfile": "first sign (level 1 complete)#3.spr"
+  },
+  {
+    "sprfile": "first sign (level 1 complete)#4.spr"
+  },
+  {
+    "sprfile": "first sign (level 1 complete)#5.spr"
+  },
+  {
+    "sprfile": "first sign (level 1 complete)#6.spr"
+  },
+  {
+    "sprfile": "first sign (level 1 complete)#7.spr"
+  },
+  {
+    "sprfile": "first sign (level 1 complete)#8.spr"
+  },
+  {
+    "sprfile": "first sign (level 1 complete).spr"
   },
   {
     "sprfile": "first sign#2.spr"
   },
   {
-    "sprfile": "first sign#3.spr"
-  },
-  {
-    "sprfile": "first sign#4.spr"
-  },
-  {
-    "sprfile": "first sign#5.spr"
-  },
-  {
-    "sprfile": "first sign#6.spr"
-  },
-  {
-    "sprfile": "first sign#7.spr"
-  },
-  {
     "sprfile": "first sign.spr"
   },
   {
-    "sprfile": "house#2.spr"
+    "sprfile": "g299.spr"
   },
   {
-    "sprfile": "house#3.spr"
+    "sprfile": "house (level 1 complete)#2.spr"
   },
   {
-    "sprfile": "house#4.spr"
+    "sprfile": "house (level 1 complete).spr"
   },
   {
-    "sprfile": "house.spr"
+    "sprfile": "house (level 2 complete)#2.spr"
   },
   {
-    "sprfile": "park 1.spr"
+    "sprfile": "house (level 2 complete)#3.spr"
   },
   {
-    "sprfile": "park 2.spr"
+    "sprfile": "house (level 2 complete)#4.spr"
+  },
+  {
+    "sprfile": "house (level 2 complete)#5.spr"
+  },
+  {
+    "sprfile": "house (level 2 complete)#6.spr"
+  },
+  {
+    "sprfile": "house (level 2 complete).spr"
+  },
+  {
+    "sprfile": "nwl office (level 2 complete).spr"
+  },
+  {
+    "sprfile": "Office Two (level 3 complete).spr"
+  },
+  {
+    "sprfile": "park 1 (level 1 complete).spr"
+  },
+  {
+    "sprfile": "park 2 (level 2 complete).spr"
   },
   {
     "sprfile": "parking#2.spr"
@@ -54,16 +117,43 @@
     "sprfile": "parking.spr"
   },
   {
-    "sprfile": "roads.spr"
+    "sprfile": "roads (level 1 complete).spr"
   },
   {
-    "sprfile": "stop sign#10.spr"
+    "sprfile": "roads (level 2 complete).spr"
   },
   {
-    "sprfile": "stop sign#11.spr"
+    "sprfile": "roads (level 2 construction).spr"
   },
   {
-    "sprfile": "stop sign#12.spr"
+    "sprfile": "roads (level 3 complete).spr"
+  },
+  {
+    "sprfile": "roads (level 3 construction).spr"
+  },
+  {
+    "sprfile": "Skyscrapper (level 3 complete).spr"
+  },
+  {
+    "sprfile": "Small factory (level 2 complete).spr"
+  },
+  {
+    "sprfile": "stop sign (level 1 complete)#2.spr"
+  },
+  {
+    "sprfile": "stop sign (level 1 complete)#3.spr"
+  },
+  {
+    "sprfile": "stop sign (level 1 complete)#4.spr"
+  },
+  {
+    "sprfile": "stop sign (level 1 complete)#5.spr"
+  },
+  {
+    "sprfile": "stop sign (level 1 complete)#6.spr"
+  },
+  {
+    "sprfile": "stop sign (level 1 complete).spr"
   },
   {
     "sprfile": "stop sign#2.spr"
@@ -81,42 +171,21 @@
     "sprfile": "stop sign#6.spr"
   },
   {
-    "sprfile": "stop sign#7.spr"
-  },
-  {
-    "sprfile": "stop sign#8.spr"
-  },
-  {
-    "sprfile": "stop sign#9.spr"
-  },
-  {
     "sprfile": "stop sign.spr"
   },
   {
     "sprfile": "terrain.spr"
   },
   {
-    "sprfile": "tree#2.spr"
+    "sprfile": "trees (level 1 complete clear).spr"
   },
   {
-    "sprfile": "tree#3.spr"
+    "sprfile": "trees (level 1 complete)#2.spr"
   },
   {
-    "sprfile": "tree#4.spr"
+    "sprfile": "trees (level 1 complete).spr"
   },
   {
-    "sprfile": "tree#5.spr"
-  },
-  {
-    "sprfile": "tree.spr"
-  },
-  {
-    "sprfile": "trees#2.spr"
-  },
-  {
-    "sprfile": "trees.spr"
-  },
-  {
-    "sprfile": "water tower.spr"
+    "sprfile": "water tower (level 2 complete).spr"
   }
 ]

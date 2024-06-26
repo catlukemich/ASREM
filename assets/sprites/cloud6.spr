@@ -1,0 +1,18 @@
+{
+  "name": "cloud6",
+  "layer_name": "Clouds",
+  "image": "cloud6.png",
+  "location": {
+    "x": -8.997246646640818,
+    "y": -2.9227368149224553,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.5338589697759356,
+    "anchorY": 0.47273935585827465
+  },
+  "size": {
+    "width": 1035,
+    "height": 695
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "stop sign (level 1 complete)#2",
+  "layer_name": "Objects",
+  "image": "stop sign (level 1 complete)#2.png",
+  "location": {
+    "x": 0.08372727523418233,
+    "y": 1.4229699194525458,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.49999629965149345,
+    "anchorY": 0.6306069053210416
+  },
+  "size": {
+    "width": 13,
+    "height": 30
+  }
+}

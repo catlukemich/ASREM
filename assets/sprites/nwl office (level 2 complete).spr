@@ -1,0 +1,18 @@
+{
+  "name": "nwl office (level 2 complete)",
+  "layer_name": "Objects",
+  "image": "nwl office (level 2 complete).png",
+  "location": {
+    "x": 0.7363571846841177,
+    "y": -2.650761413753897,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.4999990911084721,
+    "anchorY": 0.7281215741373664
+  },
+  "size": {
+    "width": 703,
+    "height": 668
+  }
+}

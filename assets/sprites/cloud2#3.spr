@@ -1,0 +1,18 @@
+{
+  "name": "cloud2#3",
+  "layer_name": "Clouds",
+  "image": "cloud2#3.png",
+  "location": {
+    "x": -0.6540451179845994,
+    "y": 2.035878520171202,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.4228457773086651,
+    "anchorY": 0.5347377887240508
+  },
+  "size": {
+    "width": 889,
+    "height": 1016
+  }
+}

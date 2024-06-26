@@ -5,6 +5,7 @@ local iso_view     = require("sources.iso.iso_view")
 local iso_sprite   = require("sources.iso.iso_sprite")
 local iso_curve    = require("sources.iso.iso_curve")
 local entities     = require("sources.entities");
+local clouds_animator = require("sources.scenes.clouds_animator")
 
 
 local scene = composer.newScene();
@@ -13,14 +14,16 @@ local scene = composer.newScene();
 ------------ MAIN SCENE FUNCTIONS ------------
 
 function scene:create() 
-    print(_VERSION)
     self.isoView = iso_view.View:new(self.view)
     self.isoView:setZoom(1)
     
     self:loadSprites()
     self:loadCurves(false)
+    self:createAnimators()
 
     self.cars = {}
+
+    self.speed = 1
 end
 
 function scene:show(event)
@@ -53,17 +56,26 @@ function scene:destroy() end
 
 function scene:loadSprites()
     --- Create the grass underneath everything:
-    local grassSprite = iso_sprite.createFromImage("assets/images/grass.png" , 1301 * 2, 1154 * 2)
-    grassSprite.layer = constants.layers["Grass"]
-    self.isoView:insert(grassSprite)
+    -- local grassSprite = iso_sprite.createFromImage("assets/images/grass.png" , 1301 * 2, 1154 * 2)
+    -- grassSprite.layer = constants.layers["Grass"]
+    -- self.isoView:insert(grassSprite)
 
     -- Load all the static sprites:
-    local sprites = iso_sprite.loadFromMultipleSpritesFile("assets/sprites", "sprites.json")
-    sprites:applyLayers(constants.layers)
-    self.isoView:insertCollection(sprites)
+    self.sprites = iso_sprite.loadFromMultipleSpritesFile("assets/sprites", "sprites.json")
+    self.sprites:applyLayers(constants.layers)
+    self.isoView:insertCollection(self.sprites)
 
     local objects = self.isoView:getLayer("Objects")
     objects:setAlpha(1)
+    local asphalt = self.isoView:getLayer("Asphalt")
+    local l2ConstructionSprites = asphalt:findall(".*level 2 construction.*") -- Level 2 construction of roads
+    l2ConstructionSprites:setAlpha(0)
+    local l3ConstructionSprites = asphalt:findall(".*level 3 construction.*") -- Level 3 construction of roads
+    l3ConstructionSprites:setAlpha(0)
+    local l1sprites = asphalt:findall(".*level 1 complete.*") -- Level 1 roads
+    l1sprites:setAlpha(0)
+    local l2sprites = asphalt:findall(".*level 2 complete.*") -- Level 2 roads
+    l2sprites:setAlpha(0)
 end
 
 function scene:loadCurves(debug)
@@ -79,10 +91,23 @@ function scene:loadCurves(debug)
 end
 
 
------------- SCENE DISPLAY LOGIC ------------
+function scene:createAnimators()
+    local cloudsCollection = self.isoView:getLayer("Clouds")
+    self.cloudsAnimator = clouds_animator.Animator:new(cloudsCollection)
+end
+
+
+------------ SCENE PUBLIC INTERFACE ------------   
+
+function scene:setSpeed(speed)
+    self.speed = speed
+end
+
+
+------------ SCENE DISPLAY LOGIC ------------   
 
 function scene:enableMouseZooming()
-    self.zoomFunction = function (event)
+    self.zoomFunction = function (event)    
         if event.type == "scroll" then
             if event.scrollY > 0 then
                 self.isoView:setZoom(1, true)
@@ -123,9 +148,14 @@ end
 
 ------------ SCENE UPDATE LOGIC ------------
 
+--- Update the game scene 
 function scene:update()
-    local time = system.getTimer() / 1000
-    local deltaTime = (time - self.lastTime) * 2
+    if self.speed == 0 then
+        return
+    end
+    local time = system.getTimer() / 1000  -- time is in seconds
+    local deltaTime = (time - self.lastTime) * 2 -- and so is deltaTime
+    deltaTime = deltaTime * self.speed -- Align the deltaTime by the game speed, which is set from the HUD
     self.lastTime = time
 
     if math.random(100) == 1 then
@@ -142,6 +172,9 @@ function scene:update()
     for _, car in ipairs(self.cars) do
         car:update(deltaTime)
     end
+
+    self.cloudsAnimator:update(deltaTime)
+
 end
 
 

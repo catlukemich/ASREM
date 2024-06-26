@@ -34,6 +34,7 @@ function scene:create()
 end
 
 function scene:show(event)
+    self.gameScene = event.parent
 end
 
 function scene:onRentSliderChange(event)
@@ -43,6 +44,7 @@ function scene:onRentSliderChange(event)
 end
 
 function scene:onSpeedChange(speed) 
+    self.gameScene:setSpeed(speed)
 end
 
 function scene:hide()

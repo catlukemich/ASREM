@@ -1,0 +1,18 @@
+{
+  "name": "roads (level 2 construction)",
+  "layer_name": "Asphalt",
+  "image": "roads (level 2 construction).png",
+  "location": {
+    "x": 1.1721838221091812,
+    "y": 0.38911396632754514,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.5705289084325259,
+    "anchorY": 0.5047487396915584
+  },
+  "size": {
+    "width": 3187,
+    "height": 2038
+  }
+}

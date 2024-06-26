@@ -1,0 +1,18 @@
+{
+  "name": "trees (level 1 complete clear)",
+  "layer_name": "Objects",
+  "image": "trees (level 1 complete clear).png",
+  "location": {
+    "x": 0.5295343397665209,
+    "y": 3.3649304316416497,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.5000074818277479,
+    "anchorY": 0.499980316902035
+  },
+  "size": {
+    "width": 482,
+    "height": 280
+  }
+}

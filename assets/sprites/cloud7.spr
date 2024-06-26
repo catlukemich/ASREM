@@ -1,0 +1,18 @@
+{
+  "name": "cloud7",
+  "layer_name": "Clouds",
+  "image": "cloud7.png",
+  "location": {
+    "x": 3.642851790859182,
+    "y": -0.7201633774224545,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.45754425979968605,
+    "anchorY": 0.4730924105384923
+  },
+  "size": {
+    "width": 665,
+    "height": 845
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "water tower (level 2 complete)",
+  "layer_name": "Objects",
+  "image": "water tower (level 2 complete).png",
+  "location": {
+    "x": -0.7681847325783178,
+    "y": -5.0107427914849545,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.5066230437920058,
+    "anchorY": 0.8589112831991017
+  },
+  "size": {
+    "width": 256,
+    "height": 467
+  }
+}

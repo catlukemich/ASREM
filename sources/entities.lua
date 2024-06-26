@@ -60,6 +60,7 @@ function entities.createCar(dirPath)
 
     function car:update(time)
         local angle = car:updateTraveler(time)
+        
         car:setRotation(angle)
     end
     

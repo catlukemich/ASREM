@@ -1,0 +1,18 @@
+{
+  "name": "house (level 2 complete)#4",
+  "layer_name": "Objects",
+  "image": "house (level 2 complete)#4.png",
+  "location": {
+    "x": -3.7173509435158185,
+    "y": 0.46325810695254566,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.4999980071377626,
+    "anchorY": 0.5000004282027375
+  },
+  "size": {
+    "width": 461,
+    "height": 274
+  }
+}

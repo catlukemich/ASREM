@@ -121,6 +121,9 @@ function iso_sprite.createFromAnimation(sheetPath, frameWidth, frameHeight, numF
         loopCount = 0
     }
 
+    didBreak
+    print("didBreak is:" .. didBreak)
+    
     local displayObject = display.newSprite(animationSheet, sequence);
     iso_sprite.applyIsometricProperties(displayObject)
     displayObject:setBounds(1, 1, 1)
@@ -177,6 +180,10 @@ function iso_sprite.applyIsometricProperties(displayObject)
         self:updateBounds()
         self:updatePosition()
         self:onLocationChange(location)
+    end
+
+    function displayObject:getLocation()
+        return self.location
     end
 
     function displayObject:onLocationChange(newLocation)

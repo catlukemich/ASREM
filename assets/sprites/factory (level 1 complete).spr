@@ -1,0 +1,18 @@
+{
+  "name": "factory (level 1 complete)",
+  "layer_name": "Objects",
+  "image": "factory (level 1 complete).png",
+  "location": {
+    "x": -1.2621260269569827,
+    "y": -2.529532840840327,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.5000001515770875,
+    "anchorY": 0.5000008821110932
+  },
+  "size": {
+    "width": 953,
+    "height": 528
+  }
+}

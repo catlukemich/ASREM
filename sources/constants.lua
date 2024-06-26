@@ -5,9 +5,10 @@ constants.hoverColor = {0.0, 0.0, 0.0}
 
 constants.layers = {}
 
-constants.layers["Grass"] = 0
-constants.layers["Ground"] = 1
-constants.layers["Asphalt"] = 2
-constants.layers["Objects"] = 3
+constants.layers["Grass"] = 1
+constants.layers["Ground"] = 2
+constants.layers["Asphalt"] = 3
+constants.layers["Objects"] = 4
+constants.layers["Clouds"] = 5
 
 return constants

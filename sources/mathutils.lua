@@ -14,6 +14,10 @@ function mathutils.Vector3:new(x, y, z)
     return o
 end
 
+function mathutils.Vector3:copy()
+    return mathutils.Vector3:new(self.x, self.y, self.z)
+end
+
 function mathutils.Vector3:add(other)
     local retval = mathutils.Vector3:new(self.x, self.y, self.z)
     retval:addSelf(other)
@@ -91,6 +95,60 @@ function mathutils.clamp(value, min, max)
 
     mathutils.lastClampRestrained = false
     return value
+end
+
+
+mathutils.QuadraticBezier = {}
+
+function mathutils.QuadraticBezier:new(cp1, cp2, cp3)
+    -- Where control points are tables created by call to mathutils.newVector3
+
+    local bezier = {
+        cp1 = cp1,
+        cp2 = cp2,
+        cp3 = cp3
+    }
+
+    function bezier:interpolate(t)
+        local location = mathutils.Vector3:new(
+            (1 - t) * ((1-t) * self.cp1.x + t * self.cp2.x) + t * ((1 - t) * self.cp2.x + t * self.cp3.x),
+            (1 - t) * ((1-t) * self.cp1.y + t * self.cp2.y) + t * ((1 - t) * self.cp2.y + t * self.cp3.y),
+            (1 - t) * ((1-t) * self.cp1.z + t * self.cp2.z) + t * ((1 - t) * self.cp2.z + t * self.cp3.z)
+        )
+        return location
+    end
+
+    return bezier
+end
+
+
+mathutils.CubicBezier = {}
+
+function mathutils.CubicBezier:new(cp1, cp2, cp3, cp4)
+    -- Where control points are tables created by call to mathutils.newVector3
+    local bezier = {
+        cp1 = cp1,
+        cp2 = cp2,
+        cp3 = cp3,
+        cp4 = cp4
+    }
+
+    function bezier:interpolate(t)
+        local quadraticBezier1 = mathutils.QuadraticBezier:new(self.cp1, self.cp2, self.cp3)
+        local quadraticBezier2 = mathutils.QuadraticBezier:new(self.cp2, self.cp3, self.cp4)
+    
+        local itpl1 = quadraticBezier1:interpolate(t)
+        local itpl2 = quadraticBezier2:interpolate(t)
+
+        local location = mathutils.Vector3:new(
+            (1 - t) * itpl1.x + t * itpl2.x,
+            (1 - t) * itpl1.y + t * itpl2.y,
+            (1 - t) * itpl1.z + t * itpl2.z
+        )
+        return location
+    end
+
+    return bezier
 end
 
 return mathutils

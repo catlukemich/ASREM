@@ -1,0 +1,18 @@
+{
+  "name": "Small factory (level 2 complete)",
+  "layer_name": "Objects",
+  "image": "Small factory (level 2 complete).png",
+  "location": {
+    "x": -1.2055427403908183,
+    "y": -0.9087500961724544,
+    "z": 0.0
+  },
+  "anchor": {
+    "anchorX": 0.5000011012703975,
+    "anchorY": 0.5000035922304763
+  },
+  "size": {
+    "width": 802,
+    "height": 423
+  }
+}
